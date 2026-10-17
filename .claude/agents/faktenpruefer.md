@@ -12,7 +12,16 @@ Der Auftrag nennt dir:
 - welche Fakten du prüfst (IDs oder Länderkürzel),
 - den Pfad, an den du das Ergebnis als JSON schreibst.
 
-Lies `sechzehn/data/fakten.csv` (Semikolon-getrennt, UTF-8) und `sechzehn/CLAUDE.md` (Abschnitte „Datenformat“, „Kategoriensystem“ mit Präzisionsregeln, „Stufen“, „Inhaltliche Leitlinien“). Ändere die CSV **nicht** selbst; das Einspielen übernimmt ein Skript.
+Lies `sechzehn/data/fakten.csv` (Semikolon-getrennt, UTF-8) und `sechzehn/CLAUDE.md` (Abschnitte „Datenformat“, „Kategoriensystem“ mit Präzisionsregeln, „Stufen“, „Inhaltliche Leitlinien“ mit allen Unterabschnitten). Ändere die CSV **nicht** selbst; das Einspielen übernimmt ein Skript.
+
+## Zusätzliche Prüfregeln (Stand 2026-10; Details in CLAUDE.md, „Inhaltliche Leitlinien“)
+
+- **Ausschlüsse → `falsch` mit Hinweis „Regelverstoß“:** Migration nach Herkunftsgruppen, Religionsanteile, Ergebnisse einzelner Parteien; Kriminalität nicht positiv gewendet, nicht als „registrierte Fälle“ laut PKS, Gewaltdelikte, Ranglisten nach oben, „sicherstes Land“; Kriminalfälle mit Verletzten/Toten oder rankend formuliert; Meinungen als Fakten („gilt als …“); Stigmatisierung von Regionen oder Bewohnern; nicht neutral.
+- **Superlative:** Kennzahl, Bezugsjahr und Quelle müssen vorhanden sein, Gegenprobe in allen 16 Ländern. Einstufung nach Bekanntheit: allgemein bekannte Superlative (größtes/kleinstes Land, meiste Einwohner) gehören auf Stufe 5, sonst Stufe-Vorschlag.
+- **Veränderliche Zahlen** (Arbeitslosigkeit, Mieten, Geburten, Kosten, Klima-Jahreswerte): Jahr im Text oder stabile Rangfolge über mehrere Jahre belegt; `zeitabhaengig = ja`. Fehlt das Jahr: `unsicher` mit Formulierungsvorschlag.
+- **Feiertage:** nur amtliche, dauerhafte Feiertage; Liste aller Länder mit diesem Feiertag prüfen (auch regionale Feiertage in Teilen eines Landes) und `trifft_auch_zu` danach füllen. Keine Schulferien.
+- **Vergleiche** („so groß wie Belgien“, „passt X-mal hinein“): beide Werte aus Quellen nachrechnen; großzügig gerundete Vergleiche nur, wenn die Rundung im Text erkennbar ist („etwa“, „gut“).
+- **Stufe über den Denkweg:** Stufe 1–2 Herleitung/Eingrenzung, Stufe 3 eindeutig aber überlegbar, Stufe 4–5 Wiedererkennung. Passt die Stufe nicht, Stufe-Vorschlag in der Notiz.
 
 ## Prüfschritte pro Fakt
 

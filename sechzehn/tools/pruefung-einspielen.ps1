@@ -5,12 +5,14 @@
 # Neue ID: hängt eine Zeile an. Pflicht: id, land, kategorie, thema, denkweg, stufe, text; die ID muss zum Schema
 # LAND-KAT-NNN passen (Land und Kategorie wie im Objekt), status fehlt → entwurf; stand nur, wenn status nicht entwurf.
 # Kommt eine neue ID in den Eingaben mehrfach vor, wird sie ganz abgelehnt.
-# Fehlen die Spalten thema/denkweg in der CSV, werden sie hinter kategorie eingefügt. -Csv: andere Datei (zum Testen).
+# Fehlen die Spalten thema/denkweg in der CSV, werden sie hinter kategorie eingefügt; fehlt gruppe, wird sie hinten angehängt.
+# gruppe: Fakten mit derselben Gruppe (frei wählbarer Name) kommen nie in dieselbe Runde. "loeschen": true entfernt die Zeile.
+# -Csv: andere Datei (zum Testen).
 param([Parameter(Mandatory, Position = 0, ValueFromRemainingArguments)][string[]]$Json, [Parameter()][string]$Csv)
 
 $csvPath = if ($Csv) { $Csv } else { Join-Path $PSScriptRoot '..\data\fakten.csv' }
 $utf8 = New-Object System.Text.UTF8Encoding($false)
-$FIELDS = 'quelle', 'trifft_auch_zu', 'zeitabhaengig', 'status', 'pruefnotiz', 'text', 'stufe', 'kategorie', 'thema', 'denkweg'
+$FIELDS = 'quelle', 'trifft_auch_zu', 'zeitabhaengig', 'status', 'pruefnotiz', 'text', 'stufe', 'kategorie', 'thema', 'denkweg', 'gruppe'
 $STATUS = 'entwurf', 'geprüft', 'unsicher', 'falsch'
 $LAENDER = 'BW BY BE BB HB HH HE MV NI NW RP SL SN ST SH TH'.Split(' ')
 # Kategoriensystem (siehe CLAUDE.md): Spielkategorie -> erlaubte Themen. Muss zu CATEGORIES in app.js passen.
@@ -77,6 +79,7 @@ foreach ($neu in 'denkweg', 'thema') {
   }
 }
 
+if ($rows[0] -notcontains 'gruppe') { for ($r = 0; $r -lt $rows.Count; $r++) { $rows[$r] = @($rows[$r]) + $(if ($r -eq 0) { 'gruppe' } else { '' }) } }
 $head = $rows[0]
 $col = @{}; for ($i = 0; $i -lt $head.Count; $i++) { $col[$head[$i]] = $i }
 $byId = @{}; for ($r = 1; $r -lt $rows.Count; $r++) { $byId[$rows[$r][$col['id']]] = $r }
@@ -87,8 +90,13 @@ $alle = @(foreach ($file in $Json) { Get-Content -Raw -Encoding UTF8 $file | Con
 # Neue IDs, die mehrfach vorkommen, sind mehrdeutig: ganz ablehnen
 $doppelt = @($alle | Where-Object { -not $byId.ContainsKey("$($_.id)") } | Group-Object { "$($_.id)" } | Where-Object { $_.Count -gt 1 } | ForEach-Object { $_.Name })
 foreach ($d in $doppelt) { $errors += "${d}: neue ID mehrfach in den Eingaben" }
+$geloescht = 0
 foreach ($it in $alle) {
     $has = { param($f) [bool]$it.PSObject.Properties[$f] }
+    if ((& $has 'loeschen') -and $it.loeschen) {
+      if ($byId.ContainsKey("$($it.id)")) { $rows[$byId["$($it.id)"]] = $null; $geloescht++ } else { $errors += "$($it.id): zum Löschen nicht gefunden" }
+      continue
+    }
     $istNeu = -not $byId.ContainsKey("$($it.id)")
     if ($istNeu) {
       if ($doppelt -contains "$($it.id)") { continue }
@@ -122,7 +130,7 @@ foreach ($it in $alle) {
     else { $rows[$byId[$it.id]] = $row; $n++ }
 }
 
-$out = ($rows | ForEach-Object { ($_ | ForEach-Object { Quote $_ }) -join ';' }) -join $nl
+$out = ($rows | Where-Object { $null -ne $_ } | ForEach-Object { ($_ | ForEach-Object { Quote $_ }) -join ';' }) -join $nl
 [IO.File]::WriteAllText((Resolve-Path $csvPath), $out + $nl, (New-Object System.Text.UTF8Encoding($bom)))
-Write-Host "$n Fakten aktualisiert, $neu neu angehängt$(if ($n) { ", stand = $stand bei Einträgen mit status" })."
+Write-Host "$n Fakten aktualisiert, $neu neu angehängt, $geloescht gelöscht$(if ($n) { ", stand = $stand bei Einträgen mit status" })."
 if ($errors.Count) { Write-Host "Übersprungen:"; $errors | ForEach-Object { Write-Host "  $_" }; exit 1 }

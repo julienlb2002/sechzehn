@@ -92,18 +92,33 @@ function usable(f) {
 // Stufe 5 muss eindeutig sein. Gibt null zurück, wenn der Pool das nicht hergibt.
 function buildRound(land, facts, rand) {
   const byStufe = [1, 2, 3, 4, 5].map(s => shuffle(facts.filter(f => f.land === land && +f.stufe === s && (s < 5 || !f.trifft_auch_zu)), rand));
-  const pick = [], used = new Set();
+  const pick = [], used = new Set(), groups = new Set(); // Fakten derselben Gruppe (Spalte gruppe) nie in einer Runde
   const go = i => {
     if (i === 5) return true;
     for (const f of byStufe[i]) {
-      if (used.has(f.kategorie)) continue;
-      used.add(f.kategorie); pick.push(f);
+      if (used.has(f.kategorie) || (f.gruppe && groups.has(f.gruppe))) continue;
+      used.add(f.kategorie); if (f.gruppe) groups.add(f.gruppe); pick.push(f);
       if (go(i + 1)) return true;
-      used.delete(f.kategorie); pick.pop();
+      used.delete(f.kategorie); if (f.gruppe) groups.delete(f.gruppe); pick.pop();
     }
     return false;
   };
   return go(0) ? { a: land, h: pick.map(f => [f.kategorie, f.text, f.id]) } : null;
+}
+
+// Tageslevel: aus dem festgeschriebenen Plan (data/plan.json, erzeugt von tools/tagesplan.ps1). Vergangene Tage und heute ändern sich
+// dadurch nie, auch wenn der Faktenpool wächst. Fehlt der Tag im Plan oder ein Fakt in der CSV, Ersatz: buildLevel aus dem Pool.
+let PLAN = null;
+function levelForDay(n) {
+  const tag = PLAN && PLAN.tage && PLAN.tage[n];
+  if (tag) {
+    const byId = new Map(FACTS.map(f => [f.id, f]));
+    const level = tag.map(r => ({ a: r.land, h: r.fakten.map(id => byId.get(id)) }));
+    if (level.length === CONFIG.ROUNDS && level.every(r => r.h.length === 5 && r.h.every(f => f && CATEGORIES[f.kategorie])))
+      return level.map(r => ({ a: r.a, h: r.h.map(f => [f.kategorie, f.text, f.id]) }));
+    console.warn(`Plan für Tag ${n} unvollständig, Ersatz aus dem Faktenpool.`);
+  }
+  return buildLevel(FACTS, n);
 }
 
 function buildLevel(facts, dayNo) {
@@ -1174,7 +1189,7 @@ function pointsOfHints(h) { return h.reduce((sum, x) => sum + (x ? CONFIG.POINTS
 // Länder eines Tages aus dem Tageslevel (dasselbe Level wie damals, solange der Faktenpool es noch so ergibt). Für alte Einträge ohne Länder.
 let FACTS = null;
 function dayNoOf(iso) { return dayIndex(iso) - dayIndex(isoOfDay(1)) + 1; }
-function landsOfDay(n) { if (!FACTS) return null; const l = buildLevel(FACTS, n); return l.length === CONFIG.ROUNDS ? l.map(q => q.a) : null; }
+function landsOfDay(n) { if (!FACTS) return null; const l = levelForDay(n); return l.length === CONFIG.ROUNDS ? l.map(q => q.a) : null; }
 // Einmal beim Start: Einträge mit Hinweisen, aber ohne Länder, um die Länder ergänzen (Einträge nur mit Punktzahl bleiben, wie sie sind)
 function migrateStats() {
   const s = loadStats(); let changed = false;
@@ -1573,10 +1588,12 @@ updateThemeButton();
 
 async function start() {
   try {
-    const [m, csv] = await Promise.all([fetch('data/map.json').then(r => r.json()), fetch('data/fakten.csv').then(r => r.text())]);
+    const [m, csv, plan] = await Promise.all([fetch('data/map.json').then(r => r.json()), fetch('data/fakten.csv').then(r => r.text()),
+      fetch('data/plan.json').then(r => (r.ok ? r.json() : null)).catch(() => null)]);
+    PLAN = plan;
     MAP = m; NAMES = Object.fromEntries(Object.entries(MAP.states).map(([k, v]) => [k, v.name]));
     DAYNO = dayNumber();
-    FACTS = parseCSV(csv); LEVEL = buildLevel(FACTS, DAYNO);
+    FACTS = parseCSV(csv); LEVEL = levelForDay(DAYNO);
     if (LEVEL.length < CONFIG.ROUNDS) throw new Error(`Der Faktenpool reicht nur für ${LEVEL.length} von ${CONFIG.ROUNDS} Runden.`);
   } catch (e) {
     $('#main').innerHTML = `<p class="verdict bad">Spiel konnte nicht geladen werden. ${e.message}</p>`; console.error(e); return;

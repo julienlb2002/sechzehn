@@ -1,0 +1,130 @@
+[
+  {
+    "id": "SH-WIR-002",
+    "quelle": "https://www.schleswig-holstein.de/DE/landesregierung/themen/verkehr-infrastruktur/strassen https://www.leinetal24.de/niedersachsen/deutschlands-laengste-autobahn-a7-niedersachsen-verkehr-rekorde-fast-1000-kilometer-93402839.html https://de.wikipedia.org/wiki/Bundesautobahn_1",
+    "trifft_auch_zu": "HH,NI",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Landesportal SH nennt A1 (Fehmarnbeltquerung) und A7 (Rendsburg) im Land; leinetal24: A7 durch SH, HH, NI, HE, BY, BW; A1-Länderliste nur Wikipedia (SH, HH, NI, HB, NW, RP, SL, A1 auch im Bremer Stadtgebiet). HB hat keine A7, daher HH,NI vollständig. Stufe 1 passt."
+  },
+  {
+    "id": "SH-GEO-002",
+    "quelle": "https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-mecklenburg-vorpommern https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-schleswig-holstein https://de.wikipedia.org/wiki/Schleswig-Holstein",
+    "trifft_auch_zu": "MV",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Lernhelfer (Duden): MV grenzt an SH, NI, BB und Polen; SH an Dänemark, MV, HH; Grenze SH-NI belegt Wikipedia. Gegenprobe: BB 5 Länder, NI 9, SN/NW/RP/SL/BW/BY mehrere Staaten, übrige ohne Staatsgrenze. Damit nur SH und MV. Stufe 2 passt."
+  },
+  {
+    "id": "SH-GEO-003",
+    "quelle": "https://www.bundeswaldinventur.de/vierte-bundeswaldinventur-2022/waldland-deutschland https://www.sdw.de/ueber-den-wald/wald-in-deutschland/waldanteil/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "Bundeswaldinventur (amtlich): unterdurchschnittliche Länder zwischen 28,8 % (SN) und 11,5 % (SH), SH niedrigster Wert; SDW (BWI 2022): HH und HB je 11,3 %, also nur als Flächenland korrekt, wie im Text. Jahr steht im Text, zeitabhängig ja richtig. Stufe 2 passt."
+  },
+  {
+    "id": "SH-GEO-004",
+    "quelle": "https://www.outdoor-magazin.com/wandertipps/16-erhebungen-berge-deutsche-bundeslaender/ https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-schleswig-holstein https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-mecklenburg-vorpommern",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Outdoor-Magazin: Bungsberg 167 m, nächstniedrige Flächenländer MV Helpter Berg 179 m, BB 201 m, Rest deutlich höher; Lernhelfer: Bungsberg 168 m, MV bis 179 m. Unter 170 m in beiden Fällen, Abstand zu MV 11 m. Amtliche Höhenangabe nicht gefunden, Quellen stimmen aber überein."
+  },
+  {
+    "id": "SH-GEO-005",
+    "quelle": "https://www.schleswig-holstein.de/DE/landesportal/land-und-leute/landschaft-natur/_documents/halligen https://www.deutschland.de/de/topic/kultur/stadt-und-land/entdecke-de-die-halligen",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Landesportal SH: zehn Halligen im SH-Wattenmeer, weltweit einzigartig, bei Hochwasser regelmäßig überflutet, Höfe auf 4-5 m hohen Warften; deutschland.de verortet sie im nordfriesischen Wattenmeer. Keine Hallig im NI-Wattenmeer gefunden. Kleine Unschärfe: Hamburger Hallig per Damm angebunden."
+  },
+  {
+    "id": "SH-PER-001",
+    "quelle": "https://www.deutsche-biographie.de/sfz6827.html https://www.schleswig-holstein.de/DE/landesportal/land-und-leute/kreise-kreisfreie-staedte/kreis-nordfriesland",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "NDB: Storm geboren 14.9.1817 in Husum, Schimmelreiter 1888, Richter in Potsdam und Heiligenstadt; Landesportal: Kreis Nordfriesland liegt direkt an der Nordsee, Storm in Husum geboren. Eindeutig SH. Stufe 2 Grenzfall zu 3, da Nordseeküste auf SH/NI/HB eingrenzt."
+  },
+  {
+    "id": "SH-PER-002",
+    "quelle": "https://www.mpg.de/19247246/max-planck-biographische-daten",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "MPG: Planck geboren 23.4.1858 in Kiel, Privatdozent München, Professor Kiel 1885, ab 1889 Berlin, gestorben 1947 in Göttingen. 'Vor allem Berlin' gedeckt. Kiel auch in SH-SPO-001 (THW), anderer Kern, keine Dopplung. Stufe 1 passt."
+  },
+  {
+    "id": "SH-GES-002",
+    "quelle": "https://um.dk/tyskland/de/uber-danemark/daenische-minderheit/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Dänisches Außenministerium: Abstimmungen 10.2. und 14.3.1920, erste Zone (Nordschleswig) fiel an Dänemark, zweite blieb deutsch. Andere Abstimmungen 1920/21 (Ostpreußen, Oberschlesien) betreffen kein heutiges Land, Eupen-Malmedy war kein Nordteil. Eindeutig SH."
+  },
+  {
+    "id": "SH-WIR-004",
+    "quelle": "https://lxgesetze.de/uzk/4 https://www.helgoland.de/shopping-zollfrei-einkaufen/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Art. 4 UZK: Deutschland ohne Insel Helgoland und Gebiet von Büsingen; helgoland.de: Waren zollfrei und ohne Mehrwertsteuer, Insel zolltechnisch Ausland. Büsingen (BW) ist keine Insel, daher eindeutig. Stufe 3 passt, Grenzfall zu 4."
+  },
+  {
+    "id": "SH-KUL-002",
+    "quelle": "https://www.festivalsindeutschland.de/festival/karl-may-spiele-bad-segeberg https://de.wikipedia.org/wiki/Karl-May-Spiele_Bad_Segeberg https://www.karl-may-vereinigung.de/forschung/en/biography.html",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "unsicher",
+    "pruefnotiz": "Gründung 1952, Kalkberg-Freilichtbühne, May aus Ernstthal (SN) belegt. Aber laut Wikipedia keine Spiele 2020/21 (Corona) und mehrere Orient-Stücke ohne Winnetou (z. B. 1955, 1963, 1978). Vorschlag: 'Seit 1952 wird hier am Kalkberg Karl May gespielt, meist mit Winnetou, obwohl May aus Sachsen stammte.'"
+  },
+  {
+    "id": "SH-WIR-003",
+    "quelle": "https://www.verkehrsrundschau.de/nachrichten/transport-logistik/nord-ostsee-kanal-schub-fuer-2024-erwartet-3481727 https://www.informare.it/news/gennews/2024/20240230-canale-Suez-transiti-Y-2023uk.asp https://www.yacht.de/reisen-chartern/deutschland/nord-ostsee-kanal-jahresbilanz-2025-erneut-weniger-verkehr-wegen-russlands-krieg/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "unsicher",
+    "pruefnotiz": "GDWS-Leiter nennt NOK 2024 meistbefahrene künstliche Wasserstraße (26.659 Schiffe 2023), Suez 2023 aber 26.434, knapp darunter; NOK 2025 nur 22.262. Erholt sich Suez, kippt der Superlativ. Text ohne Kennzahl und Jahr. Vorschlag: 'Durch dieses Land führt der Kanal zwischen Nord- und Ostsee.' (Stufe 4-5)"
+  },
+  {
+    "id": "SH-KUL-003",
+    "quelle": "https://www.leinetal24.de/welt/wacken-2026-geht-los-menge-stuermt-platz-besucher-aus-aller-welt-zr-94420987.html https://de.wikipedia.org/wiki/Wacken",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "unsicher",
+    "pruefnotiz": "dpa/leinetal24 2026: rund 85.000 Besucher im schleswig-holsteinischen Wacken. Aber Wikipedia nennt nach Statistikamt Nord 2.085 Einwohner (31.12.2025), also über 2.000; PDF des Amts nicht lesbar. Vorschlag: 'in ein Dorf mit rund 2.000 Einwohnern'. Zeitabhängig ja richtig."
+  },
+  {
+    "id": "SH-ALL-003",
+    "quelle": "https://www.schleswig-holstein.de/DE/fachinhalte/S/strassenverkehrsrecht/mehrsprachig_beschilderung https://www.travelbook.de/orte/skurrile-orte/saterland-europas-kleinste-sprachinsel",
+    "trifft_auch_zu": "NI",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Landesportal SH: zweisprachige Ortstafeln u. a. auf Friesisch (Beispiel Niebüll, Namen nach Friesisch-Gesetz). Travelbook: Saterland (NI) seit 2000 mit saterfriesischen Ortsschildern (Ramsloh/Roomelse u. a.); Saterfriesisch ist eine friesische Sprache, NI also korrekt. NI-Beleg nur Medienquelle."
+  },
+  {
+    "id": "SH-ALL-004",
+    "quelle": "https://www.test.de/Gewusst-wie-Abfrage-in-Flensburg-4693070-0/ https://www.kba.de/DE/Themen/ZentraleRegister/FAER/faer_node.html",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "Stiftung Warentest: 'Punkte in Flensburg' heißen so, weil das KBA mit Sitz Flensburg das Fahreignungsregister verwaltet; KBA-Seite führt FAER als zentrales Register, Fußzeile Flensburg. Alltag/Sprache und Identität passt (Redensart), Stufe 4 passt."
+  },
+  {
+    "id": "SH-WIR-005",
+    "quelle": "https://en.wikipedia.org/wiki/Hindenburgdamm https://www.adac.de/news/nordseeinsel-sylt-autozug/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "ADAC: Autos per Syltshuttle Niebüll-Westerland über den Hindenburgdamm oder per Fähre von der dänischen Insel Rømø; 'vom deutschen Festland' trennt das sauber. Damm reine Bahnstrecke, keine Straße nach Sylt: nur Wikipedia. Eindeutig SH, Stufe 5 passt."
+  },
+  {
+    "id": "SH-KUL-004",
+    "quelle": "https://www.planet-wissen.de/gesellschaft/wirtschaft/geld/d-mark-scheine-100~_oid-gald-mark-scheine-1001_position-3.html",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Planet Wissen (WDR): Rückseite des älteren 50-DM-Scheins zeigt das Holstentor der Hansestadt Lübeck, laut Bundesbank Sinnbild des Bürgerstolzes. Lübeck auch in SH-KUL-001 (Thomas Mann), anderer Kern, keine Dopplung. Stufe 5 passt."
+  }
+]

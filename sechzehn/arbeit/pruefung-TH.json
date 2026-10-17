@@ -1,0 +1,122 @@
+[
+  {
+    "id": "TH-ALL-003",
+    "quelle": "https://umwelt-online.de/recht/arbeitss/arbeitsrecht/laender/th/feiertg.htm https://www.stuttgarter-zeitung.de/wissen/20-september-wo-der-weltkindertag-ein-feiertag-ist-und-was-er-bedeutet-78986276.html https://www.feiertage-deutschland.de/weltkindertag/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "ThürFGtG § 2 Abs. 1 (umwelt-online, Änderung GVBl. 26.03.2019) nennt den 20. September als Weltkindertag. Stuttgarter Zeitung und feiertage-deutschland: nur TH, seit 2019; BE/MV haben 8. März, nicht 20.9. Stufe 3 passt (einziger Feiertag). Zeitabhängig, falls andere Länder folgen."
+  },
+  {
+    "id": "TH-GES-002",
+    "quelle": "https://www.deutschland.de/de/topic/politik/deutschland-europa/geteilt-aber-nicht-getrennt",
+    "trifft_auch_zu": "BY",
+    "zeitabhaengig": "nein",
+    "status": "unsicher",
+    "pruefnotiz": "deutschland.de: Mödlareuth ab 1966 durch 3,30 m hohe Betonmauer geteilt, Little Berlin, bayerischer Teil Gemeinde Töpen; BY korrekt. Aber 'Nachbarland' klingt nach Ausland, und 'hier' fehlt. Vorschlag: 'Durch ein Dorf hier an der früheren innerdeutschen Grenze lief ab 1966 eine Mauer; man nannte es Little Berlin.' Stufe 2 passt."
+  },
+  {
+    "id": "TH-GEO-001",
+    "quelle": "https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-thueringen",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Lernhelfer (Duden): TH grenzt an NI, ST, SN, BY, HE und an keinen Staat. Gegenprobe: HE 6 Länder, ST 4, BB 5 plus Polen, alle anderen mit Staatsgrenze oder anderer Zahl. Eindeutig; Stufe 2 vertretbar (Karte abzählen, HE/ST als Fehltipps), Grenzfall zu 3."
+  },
+  {
+    "id": "TH-POL-002",
+    "quelle": "https://www.bpb.de/kurz-knapp/lexika/das-junge-politik-lexikon/320325/freistaat/ https://www.bpb.de/kurz-knapp/lexika/handwoerterbuch-politisches-system/202065/land-freistaat-thueringen/",
+    "trifft_auch_zu": "BY,SN",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "bpb-Lexikon: drei Freistaaten BY, SN, TH; bpb-Handwörterbuch: Verfassung 1993 führt die Bezeichnung (ohne staatsrechtliche Folgen). trifft_auch_zu vollständig. Stufe 1 passt, da die meisten zuerst BY tippen; Stufe 2 wäre Grenzfall."
+  },
+  {
+    "id": "TH-WIR-002",
+    "quelle": "https://de.wikipedia.org/wiki/Hermsdorfer_Kreuz https://www.verkehrsrundschau.de/nachrichten/transport-logistik/thueringen-will-korrekturen-im-bundesverkehrswegeplan-2992355",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Wikipedia: Hermsdorfer Kreuz (Saale-Holzland-Kreis, TH) einziger Knoten von A4 und A9, seit 1936. Verkehrsrundschau 2016: Thüringer Landesregierung plant Ausbau des Kreuzes A4/A9. Kein Beleg der Autobahn GmbH abrufbar. Eindeutig; Stufe 2 passt (SN als Fehltipp, beide Autobahnen dort)."
+  },
+  {
+    "id": "TH-KUL-002",
+    "quelle": "https://www.revosax.sachsen.de/vorschrift/19075-StV-MDR",
+    "trifft_auch_zu": "SN,ST",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "MDR-Staatsvertrag § 1: Sendegebiet SN, ST, TH, Sitz Leipzig; § 2: Landesfunkhaus Erfurt. trifft_auch_zu vollständig. Stufe 1 vertretbar (SN liegt wegen Leipzig nahe), Grenzfall zu 2. Kein Kerndoppel mit TH-KUL-004 (KiKA)."
+  },
+  {
+    "id": "TH-WIR-003",
+    "quelle": "https://www.volksstimme.de/panorama/eichelbergtunnel-20-projekte-bei-autobahn-sanierung-3802713 https://www.daub-ita.de/en/tunnel-projects/germany/rennsteig-tunnel/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "Volksstimme 2024: Rennsteigtunnel (A71, TH) knapp 8 km, Deutschlands längster Straßentunnel. DAUB: Röhren 7.916/7.878 m, längster Autobahntunnel, Thüringer Wald. Kein längerer gefunden. Zeitabhängig ja statt nein: Fehmarnbelttunnel (18 km, DE/DK, geplant ab 2029) könnte den Rekord streitig machen."
+  },
+  {
+    "id": "TH-KUL-003",
+    "quelle": "https://www.news4teachers.de/2023/03/nach-183-jahren-froebels-idee-vom-kindergarten-ist-jetzt-kulturerbe/ http://froebel-museum.de/pages/de/startseite.php",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "unsicher",
+    "pruefnotiz": "news4teachers: erster Kindergarten 1840 in Bad Blankenburg (TH); Fröbel-Museum Bad Blankenburg nennt aber 1839 als Geburtsstunde, andere Quellen 1837. Ort sicher, Jahr strittig. Vorschlag: Jahr streichen ('Friedrich Fröbel gründete hier den ersten Kindergarten.'). Stufe 2 vertretbar (eindeutig, aber kaum bekannt)."
+  },
+  {
+    "id": "TH-WIR-004",
+    "quelle": "https://www.volksstimme.de/deutschland-und-welt/wirtschaft/ddr-simson-schwalbe-kult-marke-osten-produktion-suhl-4252688",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Volksstimme: Schwalbe 1964-1986 von Simson in Suhl gebaut, S51 zu DDR-Zeiten im Simson-Werk Suhl gefertigt. Produktionsort, korrekt formuliert. Stufe 3 passt: im Osten bekannt, im Westen weniger, SN als naheliegender Fehltipp."
+  },
+  {
+    "id": "TH-KUL-004",
+    "quelle": "https://www.zdf.de/unternehmen/organisation/publikationen/zdf-jahrbuch/2023-jahrbuch-programmchronik-118.html https://miz.org/en/institutions/kika-i12990",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "ZDF-Jahrbuch 2023 (Mitträger): Sitz des Kinderkanals Erfurt, Sendestart 1.1.1997; MIZ: Anschrift Gothaer Str. 36, Erfurt. kika.de nicht abrufbar. Eindeutig TH, Stufe 3 passt. Zeitabhängig wegen möglicher Umstrukturierung."
+  },
+  {
+    "id": "TH-PER-001",
+    "quelle": "https://bachhaus.de/en/faq https://thomanerchor.de/en/about-the-choir/der-thomaskantor/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Bachhaus Eisenach: Bach 1685 in Eisenach (TH) geboren; Thomanerchor: Thomaskantor in Leipzig 1723-1750. Text trennt Geburts- und Wirkungsort sauber. Eindeutig, Stufe 3 passt. Keine Kerndopplung mit TH-KUL-001 (Wartburg, Eisenach nicht genannt)."
+  },
+  {
+    "id": "TH-PER-002",
+    "quelle": "https://www.klassik-stiftung.de/en/themes/goethe-schiller-and-weimar-classicism/ https://www.klassik-stiftung.de/en/schiller-residence/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Klassik Stiftung: Goethe-Nationalmuseum (Goethes Wohnhaus) und Schillers Wohnhaus (1802-1805) in Weimar, beide Museen. Gegenprobe: Leipzig (Schillerhaus, Goethe nur Student ohne Museum), Jena ebenfalls TH. Eindeutig. Weimar auch in TH-GES-001 (Stufe 4, nie gemeinsam) und TH-GEO-002, anderer Kern."
+  },
+  {
+    "id": "TH-ALL-004",
+    "quelle": "https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-thueringen https://www.tagesspiegel.de/gesellschaft/historisch-belastet-kritik-an-thuringer-image-kampagne-das-grune-herz-deutschlands-14988716.html https://www.tageskarte.io/tourismus/detail/thueringer-tourismusstrategie-operation-am-gruenen-herzen.html",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "unsicher",
+    "pruefnotiz": "Kein anderes Land mit dem Slogan gefunden. Aber Tagesspiegel 2025: Slogan (Trinius, in der NS-Zeit stark genutzt) politisch umstritten; Tageskarte 2025: Landesmarke wird neu ausgerichtet, aktuell kein gültiger Tourismusclaim. Mensch: behalten? Wenn ja: 'Seit über 100 Jahren wird dieses Land als grünes Herz Deutschlands beworben.'"
+  },
+  {
+    "id": "TH-GEO-002",
+    "quelle": "https://www.lernhelfer.de/schuelerlexikon/geografie/artikel/bundesland-thueringen https://www.bpb.de/kurz-knapp/lexika/handwoerterbuch-politisches-system/202065/land-freistaat-thueringen/",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Lernhelfer nennt Erfurt (Landeshauptstadt), Weimar und Jena als Städte in TH; bpb: Erfurt Hauptstadt, Jena zweites Zentrum, Weimar Landeshauptstadt ab 1921. Eindeutig, Stufe 5 passt."
+  },
+  {
+    "id": "TH-ALL-005",
+    "quelle": "https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32012R0657 https://www.yumda.com/de/news/1147505/eu-schutz-sorgt-fuer-verdopplung-der-bratwurst-produktion.html",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "VO (EU) 657/2012 (EUR-Lex): Thüringer Rostbratwurst g.g.A., Fleischerzeugnis; yumda: EU-Schutz seit 2003, Herstellung in TH. Andere geschützte Rostbratwurst nur Nürnberger (Stadt). Thüringer Leber- und Rotwurst betreffen auch TH. Eindeutig, Stufe 5 passt."
+  }
+]

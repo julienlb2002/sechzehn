@@ -13,7 +13,17 @@ Der Auftrag nennt dir:
 - die gewünschte Anzahl (meist ca. 20),
 - den Pfad, an den du das Ergebnis als JSON schreibst.
 
-Lies zuerst `sechzehn/CLAUDE.md`, und zwar vollständig die Abschnitte „Datenformat“, „Kategoriensystem“ (Kategorien, Themen, Zuordnungsregeln, Denkweg, Ziele für den Ausbau, Präzisionsregeln, „Was gut ankommt“), „Stufen“, „Regeln für eine Runde“ und „Inhaltliche Leitlinien“. Lies `sechzehn/data/fakten.csv` (Semikolon-getrennt, UTF-8), um vorhandene Fakten und IDs zu kennen. Ändere die CSV **nicht** selbst; das Einspielen übernimmt ein Skript.
+Lies zuerst `sechzehn/CLAUDE.md`, und zwar vollständig die Abschnitte „Datenformat“, „Kategoriensystem“ (Kategorien, Themen, Zuordnungsregeln, Denkweg, Ziele für den Ausbau, Präzisionsregeln, „Was gut ankommt“), „Stufen“, „Regeln für eine Runde“ und „Inhaltliche Leitlinien“ **mit allen Unterabschnitten** (Ziel und Vision, Bevorzugte Hinweisarten, Superlative, Zahlen, die sich ändern, Ausschlüsse und Grenzen, Stufen über den Denkweg). Diese Regeln haben Vorrang vor allem, was hier unten allgemeiner steht.
+
+## Kurzfassung der Regeln (Stand 2026-10; Details in CLAUDE.md)
+
+- **Für alle, nicht für Quiz-Nerds:** Hinweise regen zum Überlegen und Kombinieren an und erzählen auch ohne Lösung etwas Interessantes. Schwerpunkt Herleitung und Wiedererkennung; reines Wissen sparsam. Politik + Geschichte zusammen höchstens 30 % je Land.
+- **Bevorzugt:** Vergleiche statt nackter Zahlen (Fläche, Einwohner, Dichte, Landeshauptstadt im Vergleich); eingrenzende Hinweise für mehrere Länder auf Stufe 1–2 (Autobahnen, Flüsse, Nachbarn, geteilte Feiertage) mit vollständigem `trifft_auch_zu`; amtliche Feiertage (keine Schulferien); Infrastruktur und Verkehr; Städte, Sehenswürdigkeiten, Architektur, Drehorte; Sprache und Alltag (Regionalwörter mit geprüfter Verbreitung, Gerichte, Bräuche, ungewöhnliche Ortsnamen); Wirtschaft (Marken, Unternehmen, Erfindungen, Landwirtschaft); Natur und Klima mit Bezugszeitraum; Bildung messbar (z. B. KMK-Abiturschnitt mit Jahr); Sport, Musik, Medien, Popkultur; Prominente (Geburts- vs. Wirkungsort); Politik/Geschichte bevorzugt herleitbar oder überraschend.
+- **Keine Namens-Hinweise** (Buchstaben, Vokale usw.): die erzeugt das Skript `tools/namenshinweise.ps1`.
+- **Superlative** nach Bekanntheit einstufen: bekannte (größtes/kleinstes Land, meiste Einwohner) nur Stufe 5; wenig bekannte auch Stufe 2–3. Immer Kennzahl, Bezugsjahr, Quelle, Gegenprobe in allen 16 Ländern.
+- **Veränderliche Zahlen** (Arbeitslosigkeit, Mieten, Geburten, Kosten, Klima-Jahreswerte) nur mit Jahr im Text oder als stabile Rangfolge über Jahre; immer `zeitabhaengig = ja`.
+- **Ausschlüsse:** keine Migration nach Herkunftsgruppen, keine Religionsanteile, keine Ergebnisse einzelner Parteien; Kriminalität nur positiv gewendet und nur „registrierte Fälle“ laut PKS, keine Gewaltdelikte, keine Ranglisten nach oben, kein „sicherstes Land“; Kriminalfälle nur ohne Verletzte/Tote, breit berichtet und beschreibend; keine Meinungen als Fakten („gilt als …“), keine Stigmatisierung, politisch neutral.
+- **Stufen über den Denkweg:** Stufe 1–2 Herleitung und Eingrenzung; Stufe 3 eindeutig, aber überlegbar (einziger Feiertag, Verwaltungsbesonderheit, Erfindung, Produktionsschwerpunkt, wenig bekannter Superlativ); Stufe 4–5 Wiedererkennung (Sehenswürdigkeit, Marke, Verein, Dialektwort, Prominente, bekannte Superlative). Lies `sechzehn/data/fakten.csv` (Semikolon-getrennt, UTF-8), um vorhandene Fakten und IDs zu kennen. Ändere die CSV **nicht** selbst; das Einspielen übernimmt ein Skript.
 
 ## Vorgehen
 

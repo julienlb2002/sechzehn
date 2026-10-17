@@ -1,0 +1,30 @@
+[
+  {
+    "id": "TH-ALL-003",
+    "land": "TH",
+    "kategorie": "Alltag",
+    "thema": "Feste und Bräuche",
+    "denkweg": "Wissen",
+    "stufe": 3,
+    "text": "Am Weltkindertag, dem 20. September, haben die Menschen hier gesetzlich frei.",
+    "trifft_auch_zu": "",
+    "quelle": "https://www.stuttgarter-zeitung.de/wissen/20-september-wo-der-weltkindertag-ein-feiertag-ist-und-was-er-bedeutet-78986276.html",
+    "zeitabhaengig": "ja",
+    "status": "entwurf",
+    "pruefnotiz": "Erzeugt: Stuttgarter Zeitung: 20.9. nur in TH gesetzlicher Feiertag, seit Gesetzesänderung 2019. Offen: amtlicher Beleg (ThürFGtG § 2, Landtag-Drs.) nicht abgerufen; zeitabhängig, falls andere Länder folgen."
+  },
+  {
+    "id": "TH-GES-002",
+    "land": "TH",
+    "kategorie": "Geschichte",
+    "thema": "Geschichte",
+    "denkweg": "Wissen",
+    "stufe": 2,
+    "text": "Durch ein Dorf an der Grenze zum Nachbarland lief ab 1966 eine Mauer, man nannte es „Little Berlin“.",
+    "trifft_auch_zu": "BY",
+    "quelle": "https://www.deutschland.de/de/topic/politik/deutschland-europa/geteilt-aber-nicht-getrennt",
+    "zeitabhaengig": "nein",
+    "status": "entwurf",
+    "pruefnotiz": "Erzeugt: deutschland.de: Mödlareuth (Little Berlin) ab 1966 durch Betonmauer geteilt, bayerischer Teil Gemeinde Töpen, anderer Teil TH. Offen: BY in trifft_auch_zu (Dorfhälfte), Stufe 2 prüfen."
+  }
+]

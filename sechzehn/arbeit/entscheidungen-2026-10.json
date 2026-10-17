@@ -1,0 +1,7 @@
+﻿[
+  { "id": "TH-ALL-004", "loeschen": true },
+  { "id": "HE-ALL-002", "stufe": 5, "trifft_auch_zu": "", "status": "geprüft", "pruefnotiz": "Entschieden 2026-10: Stufe 5, BY gestrichen (Kombination Handkäs + Ebbelwoi nur für HE belegt; Untermain nur Apfelwein, Rheinhessen trinkt Wein dazu)." },
+  { "id": "SH-ALL-004", "stufe": 5, "status": "geprüft", "pruefnotiz": "Entschieden 2026-10: Stufe 5 (Flensburg-Punkte allgemein bekannt). Belege: Stiftung Warentest, KBA (Fahreignungsregister in Flensburg)." },
+  { "id": "SH-WIR-003", "gruppe": "SH-Kueste" },
+  { "id": "SH-GEO-001", "gruppe": "SH-Kueste" }
+]

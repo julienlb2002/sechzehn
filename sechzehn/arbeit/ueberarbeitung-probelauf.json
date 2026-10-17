@@ -1,0 +1,12 @@
+[
+  { "id": "TH-GES-002", "text": "Durch ein Dorf hier an der früheren innerdeutschen Grenze lief ab 1966 eine Mauer; man nannte es „Little Berlin“.", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10 nach Prüfervorschlag („Nachbarland“ klang nach Ausland, „hier“ fehlte). Inhalt und trifft_auch_zu BY waren bestätigt. Nachprüfen: nur die neue Formulierung." },
+  { "id": "TH-KUL-003", "text": "Friedrich Fröbel gründete hier den ersten Kindergarten.", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: Gründungsjahr gestrichen (Quellen nennen 1837, 1839 oder 1840). Ort Bad Blankenburg war bestätigt. Nachprüfen: Formulierung ohne Jahr, Stufe 2?" },
+  { "id": "SH-KUL-002", "text": "Seit 1952 wird hier am Kalkberg Karl May gespielt, meist mit Winnetou, obwohl May aus Sachsen stammte.", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10 nach Prüfervorschlag (Winnetou nicht in jeder Saison, 2020/21 keine Spiele). Nachprüfen: neue Formulierung." },
+  { "id": "SH-WIR-003", "text": "Durch dieses Land führt der Kanal zwischen Nord- und Ostsee.", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: Superlativ gestrichen (2023 knapp vor Suez, 2025 deutlich weniger Schiffe). Nachprüfen: eindeutig, Stufe 4 (Wiedererkennung)?" },
+  { "id": "SH-KUL-003", "text": "Jeden Sommer kommen Zehntausende Metal-Fans in ein Dorf hier mit rund 2.000 Einwohnern.", "status": "entwurf", "zeitabhaengig": "ja",
+    "pruefnotiz": "Überarbeitet 2026-10: Einwohnerzahl „rund 2.000“ (2.085 am 31.12.2025), Besucherzahl ohne feste Zahl. Nachprüfen: Formulierung, zeitabhaengig ja." }
+]

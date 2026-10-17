@@ -1,0 +1,38 @@
+[
+  {
+    "id": "TH-GES-002",
+    "trifft_auch_zu": "BY",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung: neue Formulierung passt. deutschland.de (erneut abgerufen): Mödlareuth zwischen TH und BY geteilt, ab 1966 Betonmauer durch den Ort, als Little Berlin in die Geschichte eingegangen. 'Hier' plus 'früheren innerdeutschen Grenze' klar, BY bleibt richtig, Stufe 2 passt."
+  },
+  {
+    "id": "TH-KUL-003",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung: Text ohne Jahr ist richtig. news4teachers: erster Kindergarten Fröbels in Bad Blankenburg (TH); Fröbel-Museum nennt 1839 als Geburtsstunde im Haus über dem Keller, daher Jahr zu Recht gestrichen. Eindeutig TH. Stufe 2 passt (Fröbel bekannt, Ort kaum)."
+  },
+  {
+    "id": "SH-KUL-002",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung: karl-may-spiele.de und festivalsindeutschland belegen Gründung 1952, Bad Segeberg/Kalkberg; Wikipedia: nur 2020/21 ausgefallen, Winnetou in neueren Stücken fast immer (Klaws, auch 2027). 'meist' deckt frühe Orient-Stücke. Karl-May-Vereinigung: May aus Ernstthal (SN). Elspe (NW) durch Kalkberg ausgeschlossen."
+  },
+  {
+    "id": "SH-WIR-003",
+    "quelle": "https://www.schleswig-holstein.de/DE/landesregierung/themen/verkehr-infrastruktur/nord-ostsee-kanal",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung: Landesportal SH: Kanal verläuft quer durchs Land von Brunsbüttel bis Kiel, verbindet Nord- und Ostsee; Quellen zum gestrichenen Superlativ ersetzt. Eindeutig SH, Stufe 4 passt. zeitabhaengig nein statt ja: ohne Rangfolge stabil. Hinweis: Kern nah an SH-GEO-001 (Stufe 5, beide Meere)."
+  },
+  {
+    "id": "SH-KUL-003",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "ja",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung: leinetal24 (2026): rund 85.000 Besucher im schleswig-holsteinischen Wacken; Citypopulation: Gemeinde Wacken 2.085 (2025), Zensus 2022 1.926, also rund 2.000. Andere Metal-Festivals in Städten (Dinkelsbühl, Ballenstedt). Eindeutig SH, Stufe 4 passt; ja wegen Festivalzukunft."
+  }
+]

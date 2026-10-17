@@ -143,7 +143,8 @@ Tägliches Browser-Ratespiel zu den 16 Bundesländern, im Stil von Wordle. Fokus
   - Neu erzeugen (kein Node nötig): Spielserver starten, `& .\tools\karte-speichern.ps1` starten (wartet auf localhost:8001), dann http://localhost:8000/tools/karte-erzeugen.html öffnen und „An karte-speichern.ps1 senden“ drücken. Die Seite lädt mapshaper 0.7.80 (`www/modules.js` und `www/mapshaper.js` von unpkg) und die Quelle direkt von GitHub, zeigt eine Vorschau und bietet die Datei auch zum Herunterladen an.
   - Fest hinterlegte Kartenkoordinaten (`LABELS`, `SMALL` in `app.js`) beziehen sich auf diese Karte. Beim Wechsel von der alten 500er-Karte galt x' = 1,6·x, y' = 1,6·y − 2,25.
 - Lokal starten: Kein Python/Node auf dem Rechner; der Server läuft über PowerShell (`.claude/launch.json`, Name „sechzehn“, Port 8000). Dann http://localhost:8000. Mit `?tag=3` lässt sich ein beliebiger Tag testen (nur lokal).
-- `tools/stufen-luecken.ps1`, `tools/pruefung-einspielen.ps1` (Faktenpool, siehe unten), `tools/screenshots.ps1` (Screenshots, siehe Entwicklermodus).
+- `tools/stufen-luecken.ps1`, `tools/pruefung-einspielen.ps1` (Faktenpool, siehe unten), `tools/screenshots.ps1` (Screenshots, siehe Entwicklermodus; Hinweis: Edge im Hintergrundmodus rendert nicht schmaler als ca. 500 px, Handygrößen daher in der Geräte-Emulation prüfen).
+- `tools/namenshinweise.ps1`: Namens-Hinweise aus den 16 Kurznamen (Buchstabenzahl, „kein a/e“, Doppelbuchstabe, Umlaut, „Burg“, steckt ein anderer Landesname darin, gleicher Anfangs- und Endbuchstabe, Endung „-en“, gleicher Anfangsbuchstabe wie N andere, Bindestrich). `trifft_auch_zu` exakt berechnet; Stufe ≥ 4 Länder → 1, 2–3 → 2, eindeutig → 3 (nur nicht triviale Eigenschaften). Je Land höchstens 2 (bevorzugt Stufe 2, verschiedene Arten und verschiedene Ländergruppen, jede Art insgesamt höchstens 4-mal). Alltag / Sprache und Identität / Herleitung, Quelle „berechnet aus dem Ländernamen“, Status geprüft. `-Alle` listet alle Kandidaten. Ergebnis `arbeit/namenshinweise.json`, eingespielt 2026-10 (30 Hinweise).
 
 ## Entwicklermodus (`?dev=1`)
 
@@ -187,6 +188,7 @@ Testdaten danach mit „Statistik löschen“ entfernen.
 | stand | Monat der letzten Prüfung, `JJJJ-MM` |
 | status | `entwurf`, `geprüft`, `unsicher`, `falsch` |
 | pruefnotiz | Begründung der Prüfung |
+| gruppe | optional: Fakten mit derselben Gruppe (frei wählbarer Name, z. B. `SH-Kueste`) kommen nie in dieselbe Runde. Für Paare, die über dieselbe Überlegung zur Lösung führen (SH-WIR-003 Nord-Ostsee-Kanal / SH-GEO-001 Küste an Nord- und Ostsee). Der Prüfer schlägt solche Gruppen vor. |
 
 Das Spiel liest Spalten über ihre Namen (`parseCSV`); zusätzliche Spalten stören nicht. Fakten mit einer Kategorie, die nicht in `CATEGORIES` (app.js) steht, sortiert `usable()` **ohne Fehlermeldung** aus. Neue Kategorie also immer gleichzeitig in `CATEGORIES`, `style.css` (`--c-…`, hell und zweimal dunkel), `tools/pruefung-einspielen.ps1` und `tools/stufen-luecken.ps1` eintragen.
 
@@ -221,6 +223,7 @@ Ziele für den Ausbau (pro Land, bei ca. 20 Fakten):
 - jeder Denkweg mindestens 4-mal. Stand 2026-10 nach Etappe 1 (191 Fakten): Wissen 94, Wiedererkennung 60, Herleitung 37 → weiter gezielt Herleitung suchen.
 - Etappe 1 (2026-10, erledigt): die sechs Länder ohne Fakten (BE 23, BB 20, HB 21, HE 22, NW 24, ST 21). Alle sechs erfüllen die Ziele bis auf: HE und ST haben nur 2 geprüfte Fakten auf Stufe 5. Nächste Etappe: die übrigen zehn Länder (je 5–6 Fakten) auf ca. 20 auffüllen.
 - Kein künstlicher Hinweis: Eine offene Stelle ist besser als ein schwacher oder unklarer Fakt.
+- Ausbau 2026-10, Schritte 1–4 (erledigt): neue Regeln (Inhaltliche Leitlinien), 30 Namens-Hinweise per Skript, vier Altfakten überarbeitet (drei geprüft, HE-ALL-002 offen), Probelauf TH (+15, davon 14 geprüft, TH-ALL-004 offen) und SH (+16, alle geprüft). Stand danach: 252 Fakten, 250 geprüft; Denkweg Wissen 104 (42 %), Herleitung 76 (30 %), Wiedererkennung 70 (28 %). Erkenntnis: Agenten stoßen an Sitzungslimits; Aufträge deshalb immer mit „bis dahin Belegtes trotzdem schreiben“ und vorbereitete Ideenliste für einen zweiten Lauf. Etappe 2 (übrige Länder) wartet auf Freigabe.
 
 Präzisionsregeln (für Erzeugung und Prüfung):
 - Hauptsitz, Gründungsort und Produktionsstandort unterscheiden; ebenso Geburtsort, Herkunft, Wohnort und Wirkungsort; Drehort, Handlungsort und Produktionsort.
@@ -254,13 +257,53 @@ Fehler aus dem ersten Test: „Grenzt an Frankreich, Luxemburg und Belgien“ wa
 - Stufe 5 muss eindeutig sein (`trifft_auch_zu` leer).
 - Nur Status `geprüft` (`CONFIG.ALLOW_DRAFTS: false`; `true` nur zum Testen, dann zählen auch `entwurf` und `unsicher`).
 - Spielstand: `CONFIG.KEEP_PROGRESS: true` → localStorage, der Tag lässt sich nicht durch Neuladen oder einen neuen Tab neu spielen (`false` = sessionStorage, nur zum Testen).
-- Tageslevel wird deterministisch aus der Tagesnummer erzeugt (gleicher Seed für alle).
+- Keine zwei Fakten derselben `gruppe` in einer Runde.
+- **Tagespläne sind festgeschrieben** (seit 2026-10): `data/plan.json` enthält für jeden Tag die fünf Runden (Land + fünf Fakt-IDs, Stufe 1→5). Das Spiel liest den Tag aus dem Plan (`levelForDay`); nur wenn der Tag fehlt oder ein Fakt nicht mehr in der CSV steht, rechnet es wie früher aus dem Pool (`buildLevel`, Seed = Tagesnummer). Grund: Früher mischte jede Änderung am Faktenpool alle Tage neu, auch den laufenden. Vergangene Tage und heute ändern sich nie mehr (Plan-Fakten werden unabhängig vom späteren Status verwendet).
+  - Erzeugen: `& .\tools\tagesplan.ps1 [-Tage 60] [-NeuPlanen] [-Sperre 30]`. Ohne `-NeuPlanen` hängt es nur fehlende Tage bis heute + 60 an und plant künftige Tage neu, deren Fakten inzwischen ungültig sind (gelöscht, nicht mehr geprüft). Mit `-NeuPlanen` plant es alle Tage ab morgen neu (nach einem Paket neuer Fakten, damit sie bald vorkommen). Heute und davor nie.
+  - Wiederverwendungssperre nur für Hinweise: ein Fakt frühestens nach 30 Tagen wieder. Reicht der Pool dafür nicht, lockert das Tool die Sperre für diesen Tag (am längsten unbenutzte Fakten zuerst) und meldet es. Stand 2026-10 (≈ 250 Fakten): ab Tag 6 gelockert; wird mit Etappe 2 besser.
+  - **Für Länder gibt es bewusst keine tagesübergreifende Sperre** (Entscheidung 2026-10): Jedes Land kann an jedem Tag vorkommen, auch an aufeinanderfolgenden Tagen. Grund: Eine Sperre wäre ein Hinweis von außen – wer weiß, dass gestern Bayern dran war, könnte Bayern heute ausschließen. Innerhalb eines Tages bleiben es fünf verschiedene Länder. Die Auswahl ist je Tag zufällig (Seed = Tagesnummer).
+  - Eingefroren beim Umstieg: Tag 1–3 exakt so, wie sie online zuvor aus dem Pool berechnet wurden (auf der Live-Seite mit `buildLevel` ermittelt).
+  - Nach jedem Faktenpaket: einspielen → `tagesplan.ps1 -NeuPlanen` → committen und pushen. Vor dem Push prüfen, dass das heutige Level unverändert bleibt.
 
 ### Inhaltliche Leitlinien
+**Ziel und Vision:** Sechzehn ist ein Spiel für alle, nicht für Quiz-Nerds. Hinweise sollen zum Überlegen und Kombinieren anregen und auch ohne Lösung etwas Interessantes über Deutschland erzählen. Politik und Geschichte bleiben, aber als ein Teil unter vielen (zusammen höchstens 30 % je Land). Schwerpunkt: Herleitung und Wiedererkennung statt reinem Wissen. Stand vor dem Ausbau (2026-10): Wissen 94, Wiedererkennung 60, Herleitung 37. Ziel für den Gesamtpool: Herleitung mindestens 35 %, Wissen höchstens 35 %.
+
 - Keine wörtlichen Zitate realer Personen, außer mit Primärquelle.
 - Zahlen nur mit Quelle; eine falsche Zahl kann den Hinweis auf ein anderes Land verschieben.
 - Politisch neutral formulieren; keine Wertungen über Parteien oder Personen.
-- Startziel: ca. 20 geprüfte Fakten pro Land (≈ 320 gesamt).
+- Ziel: mindestens 20 geprüfte Fakten pro Land.
+
+#### Bevorzugte Hinweisarten (2026-10; Themen sind Metadaten, die acht Spielkategorien bleiben)
+- **Vergleiche statt nackter Zahlen:** Fläche („so groß wie Belgien“, „das Saarland passt X-mal hinein“), Einwohner („mehr Einwohner als X und Y zusammen“, „jeder fünfte Einwohner Deutschlands“), Dichte, Landeshauptstadt im Vergleich zu anderen Landeshauptstädten.
+- **Eingrenzende Hinweise, die auf mehrere Länder passen** (Stufe 1–2): Autobahnen, Flüsse, Grenzen/Nachbarn, Feiertage mehrerer Länder, gemeinsame Merkmale. `trifft_auch_zu` immer vollständig füllen.
+- **Feiertage** (amtlich, dauerhaft): Feiertage, die es nur in einem oder wenigen Ländern gibt; Anzahl der Feiertage. Keine Schulferien-Daten (ändern sich jährlich).
+- **Infrastruktur und Verkehr:** Autobahnen, Bahnhöfe, Flughäfen, U-Bahn/S-Bahn, Brücken, Häfen.
+- **Städte, Sehenswürdigkeiten, Architektur,** Drehorte von Filmen und Serien, Schauplätze.
+- **Sprache und Alltag:** Dialekt- und Regionalwörter (Verbreitung prüfen, Sprachgrenzen ≠ Landesgrenzen), Gerichte, Produkte, Bräuche, ungewöhnliche Ortsnamen.
+- **Wirtschaft:** Marken, Unternehmen (Hauptsitz/Gründung/Produktion unterscheiden), Erfindungen, Landwirtschaft (Spargel, Hopfen, Wein …), Produktionsschwerpunkte.
+- **Natur und Klima:** Berge, Seen, Inseln, Waldanteil, Schutzgebiete, Klima- und Wetterwerte mit Bezugszeitraum.
+- **Bildung:** Hochschulen, Studierende, Abiturdurchschnittsnoten laut KMK mit Jahr (messbar); keine Meinungen wie „schwerstes Abitur“.
+- **Sport, Musik, Medien, Popkultur:** Vereine, Bands, Festivals, Sender, bekannte TV-Formate; Memes und Virales nur mit solider Quelle.
+- **Prominente:** Geburts- und Wirkungsort genau unterscheiden.
+- **Politik und Geschichte** weiterhin, bevorzugt herleitbar oder überraschend (Landtagsgröße, Wahlalter, Verwaltungsbesonderheiten, Entstehung aus historischen Territorien); Wahlbeteiligung erlaubt.
+- **Namens-Hinweise** (Buchstaben, Vokale, Bindestrich, Anfangsbuchstaben …) erzeugt nur das Skript `tools/namenshinweise.ps1` (exakt berechnet), höchstens 2 je Land.
+
+#### Superlative
+Erlaubt, aber nach Bekanntheit eingestuft, nicht automatisch spät: allgemein bekannte Superlative (größtes/kleinstes Land, meiste Einwohner) nur Stufe 5; wenig bekannte (meiste U-Bahn-Linien, niedrigste Dichte) auch Stufe 2–3. Immer mit Kennzahl, Bezugsjahr, Quelle und aktiver Suche nach Gegenbeispielen in allen 16 Ländern.
+
+#### Zahlen, die sich ändern
+Arbeitslosigkeit, Mieten, Geburten, Kosten, Klima-Jahreswerte u. Ä. nur mit Jahresangabe im Text oder als stabile Rangfolge über mehrere Jahre („seit Jahren eine der …“), immer `zeitabhaengig = ja`.
+
+#### Ausschlüsse und Grenzen
+- Keine Migration nach Herkunftsgruppen, keine Religionsanteile, keine Ergebnisse einzelner Parteien.
+- Kriminalität nur positiv gewendet (z. B. „die wenigsten registrierten Wohnungseinbrüche je Einwohner (Jahr)“), nur „registrierte Fälle“ laut PKS, keine Gewaltdelikte, keine Ranglisten nach oben, kein „sicherstes Land“.
+- Bekannte Kriminalfälle nur ohne Verletzte/Tote und breit berichtet, beschreibend statt rankend („Hier gruben sich Täter durch einen Tunnel …“ statt „größter Bankraub“).
+- Keine Meinungen als Fakten („gilt als …“), keine Stigmatisierung von Regionen oder Bewohnern, politisch neutral.
+
+#### Stufen über den Denkweg
+- **Stufe 1–2:** Herleitung und Eingrenzung (Namen, Vergleiche, Nachbarn, Autobahnen, geteilte Feiertage).
+- **Stufe 3:** eindeutig, aber überlegbar (einziger Feiertag, Verwaltungsbesonderheit, Erfindung, Produktionsschwerpunkt, wenig bekannte Superlative).
+- **Stufe 4–5:** Wiedererkennung (Sehenswürdigkeit, Marke, Verein, Dialektwort, Prominente, bekannte Superlative).
 
 ## Prüf-Agent
 

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "BY-SPO-001",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Nachprüfung Stufe: vierschanzentournee.com (History, erneut abgerufen) nennt Oberstdorf, Garmisch-Partenkirchen, Innsbruck, Bischofshofen; beide deutschen Orte in BY (bayerischer Beleg infranken aus Vorprüfung, quelle unverändert). Stufe 4 passt: bekanntes TV-Ereignis, Wiedererkennung. Fakt eindeutig."
+  },
+  {
+    "id": "HH-ALL-001",
+    "quelle": "https://www.dwds.de/wb/Rundst%C3%BCck https://www.atlas-alltagssprache.de/brotchen/ https://de.wikipedia.org/wiki/Br%C3%B6tchen",
+    "trifft_auch_zu": "SH,NI",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "DWDS: Rundstück = Brötchen, D-Nordwest (Hamburg), hamburgisch; Duden: norddeutsch; AdA: im hohen Norden, stark zurückgegangen, trägt traditionell. SH und Teile NI nur Wikipedia (Brötchen), passt zu Duden. Stufe 2 mit SH,NI stimmig. Optional heißt statt hieß (Rundstück warm noch gängig)."
+  },
+  {
+    "id": "HE-WIR-001",
+    "quelle": "https://www.travelbook.de/orte/skurrile-orte/monte-kali-hessen-berg https://de.wikipedia.org/wiki/Monte_Kali",
+    "trifft_auch_zu": "",
+    "zeitabhaengig": "nein",
+    "status": "geprüft",
+    "pruefnotiz": "Travelbook: Halde bei Heringen (Hessen) aus Kalisalz-Abfällen, ca. 520 m ü. NN; Wikipedia: Salzhalde, vor allem Steinsalz, Heringen (Werra), Kreis Hersfeld-Rotenburg. Salzhalde damit gedeckt. Weitere Monte-Kali-Halden (NI, ST, TH, HE) und Heringen/Helme (TH) durch an der Werra ausgeschlossen."
+  },
+  {
+    "id": "HE-ALL-002",
+    "trifft_auch_zu": "BY",
+    "zeitabhaengig": "nein",
+    "status": "unsicher",
+    "pruefnotiz": "Nicht abschließend geprüft: Quellen wegen Sitzungslimit nicht abrufbar, erneut prüfen. Offene Frage: Stufe 3-4 verlangt laut CLAUDE.md Eindeutigkeit, BY in trifft_auch_zu passt formal nur zu Stufe 1-2. Mensch entscheidet: BY als Randfall streichen (dann Stufe 4 oder 5) oder BY behalten und Stufe 2."
+  }
+]

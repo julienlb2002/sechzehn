@@ -1,0 +1,10 @@
+[
+  { "id": "BY-SPO-001", "stufe": 4, "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: Stufe 3 → 4 nach Vorschlag des Prüfers (TV-Großereignis, Alpen führen zu BY). Nachprüfen: nur ob Stufe 4 passt; Fakt war bestätigt." },
+  { "id": "HH-ALL-001", "text": "Ein Brötchen hieß hier traditionell Rundstück.", "trifft_auch_zu": "SH,NI", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: Text auf „hieß traditionell“ (Wort stark zurückgegangen, AdA), SH,NI als norddeutsche Randgebiete behalten. Nachprüfen: trägt DWDS/Duden diese Formulierung, Stufe 2 mit SH,NI?" },
+  { "id": "HE-WIR-001", "text": "Eine riesige Salzhalde aus dem Kalibergbau bei Heringen an der Werra heißt Monte Kali.", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: „Abraumhalde“ → „Salzhalde“ (Abraum = Deckgestein). Nachprüfen: Salzhalde/Rückstandshalde belegt, Heringen heute in HE." },
+  { "id": "HE-ALL-002", "stufe": 4, "trifft_auch_zu": "BY", "status": "entwurf",
+    "pruefnotiz": "Überarbeitet 2026-10: BY (bayerischer Untermain) als Randfall behalten, daher Stufe 5 → 4. Nachprüfen: Stufe 4 mit BY in trifft_auch_zu angemessen?" }
+]
