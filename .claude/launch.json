@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sechzehn",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "C:\\Users\\JULIEN~1\\AppData\\Local\\Temp\\claude\\C--Users-Julien-Becker-Desktop-Claude-Sechszehn\\61e5b52b-4f0f-4af7-8c71-1e0b27de638b\\scratchpad\\serve.ps1", "-Root", "C:\\Users\\Julien Becker\\Desktop\\Claude\\Sechszehn\\sechzehn", "-Port", "8000"],
+      "port": 8000
+    }
+  ]
+}

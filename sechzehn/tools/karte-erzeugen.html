@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karte erzeugen</title>
+<!-- Erzeugt data/map.json aus den Ländergrenzen von github.com/isellsoap/deutschlandGeoJSON (gemeinfrei).
+     Läuft im Browser, weil auf dem Entwicklungsrechner kein Node installiert ist: mapshaper (offizielles Browser-Paket) vereinfacht
+     topologieerhaltend, benachbarte Länder teilen sich danach exakt dieselbe Grenzlinie.
+     Ablauf: Spielserver starten (localhost:8000), in einem zweiten Fenster  & .\tools\karte-speichern.ps1  starten,
+     dann http://localhost:8000/tools/karte-erzeugen.html öffnen und „Speichern“ drücken. -->
+<!-- modules.js liefert die Node-Hilfsmodule (u. a. Buffer), die das Browser-Paket erwartet; Reihenfolge wie in mapshapers eigener Weboberfläche -->
+<script src="https://unpkg.com/mapshaper@0.7.80/www/modules.js"></script>
+<script src="https://unpkg.com/mapshaper@0.7.80/www/mapshaper.js"></script>
+<style>
+  body{font:15px/1.45 system-ui,sans-serif;margin:24px;max-width:1100px;background:#fff;color:#121417}
+  pre{background:#f3f4f6;padding:12px;border-radius:8px;white-space:pre-wrap}
+  button{font:inherit;padding:8px 16px;border-radius:999px;border:0;background:#121417;color:#fff;cursor:pointer}
+  button:disabled{opacity:.4;cursor:default}
+  svg{width:100%;max-width:520px;height:auto;display:block;margin-top:16px}
+  svg path{fill:#b9c1cb;stroke:#fff;stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd}
+  svg circle{fill:#d64045}
+</style>
+</head>
+<body>
+<h1>Karte erzeugen</h1>
+<p>Quelle, Vereinfachung und Projektion stehen oben im Skript. Ergebnis: <code>data/map.json</code> im Format <code>{w, h, states: {BW: {name, d, c}, …}}</code>.</p>
+<pre id="log">Lade …</pre>
+<p><button id="save" disabled>An karte-speichern.ps1 senden (localhost:8001)</button> <a id="dl" download="map.json" hidden>Herunterladen</a></p>
+<svg id="preview" aria-label="Vorschau"></svg>
+<script>
+const QUELLE = 'https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json';
+const VEREINFACHUNG = '-simplify 8% keep-shapes';          // mapshaper, topologieerhaltend; keine eigene Punktausdünnung
+const BREITE = 800;                                         // Kartenbreite in viewBox-Einheiten
+const COS = Math.cos(51.2 * Math.PI / 180);                 // x = Länge × cos(51,2°), y = −Breite
+const ORDER = ['BW', 'BY', 'BE', 'BB', 'HB', 'HH', 'HE', 'MV', 'NI', 'NW', 'RP', 'SL', 'SN', 'ST', 'SH', 'TH'];
+
+const log = t => (document.getElementById('log').textContent += '\n' + t);
+const r1 = v => Math.round(v * 10) / 10;
+
+// Fläche und Schwerpunkt eines Rings (Shoelace-Formel)
+function ringStats(p) {
+  let a = 0, cx = 0, cy = 0;
+  for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+    const f = p[j][0] * p[i][1] - p[i][0] * p[j][1];
+    a += f; cx += (p[j][0] + p[i][0]) * f; cy += (p[j][1] + p[i][1]) * f;
+  }
+  a /= 2; return { a: Math.abs(a), cx: a ? cx / (6 * a) : p[0][0], cy: a ? cy / (6 * a) : p[0][1] };
+}
+
+async function main() {
+  document.getElementById('log').textContent = `mapshaper ${mapshaper.internal && mapshaper.internal.VERSION || '0.7.80'}\nQuelle: ${QUELLE}`;
+  const src = await fetch(QUELLE).then(r => { if (!r.ok) throw new Error('Quelle nicht ladbar: ' + r.status); return r.text(); });
+  log(`Quelle geladen: ${(src.length / 1e6).toFixed(2)} MB`);
+  const out = await mapshaper.applyCommands(`-i in.json ${VEREINFACHUNG} -o out.json format=geojson`, { 'in.json': src });
+  const raw = out['out.json'], gj = JSON.parse(typeof raw === 'string' ? raw : new TextDecoder().decode(raw));
+  log(`Vereinfacht mit „${VEREINFACHUNG}“: ${gj.features.length} Länder`);
+
+  // Projektion und gemeinsamer Rahmen
+  const polysOf = g => (g.type === 'Polygon' ? [g.coordinates] : g.coordinates);
+  const proj = ([lon, lat]) => [lon * COS, -lat];
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const f of gj.features) for (const poly of polysOf(f.geometry)) for (const ring of poly) for (const pt of ring) {
+    const [x, y] = proj(pt); minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  }
+  const s = BREITE / (maxX - minX), H = r1((maxY - minY) * s);
+  const xy = pt => { const [x, y] = proj(pt); return [r1((x - minX) * s), r1((y - minY) * s)]; };
+
+  const states = {}; let punkte = 0;
+  for (const f of gj.features) {
+    const code = String(f.properties.id || '').replace(/^DE-/, '');
+    if (!ORDER.includes(code)) { log('Unbekanntes Land übersprungen: ' + JSON.stringify(f.properties)); continue; }
+    const parts = [], polys = [];
+    for (const poly of polysOf(f.geometry)) {
+      const rings = poly.map(ring => {
+        const p = [];
+        for (const pt of ring) { const q = xy(pt); const last = p[p.length - 1]; if (!last || last[0] !== q[0] || last[1] !== q[1]) p.push(q); } // gleiche Punkte nach dem Runden zusammenfassen
+        if (p.length > 1 && p[0][0] === p[p.length - 1][0] && p[0][1] === p[p.length - 1][1]) p.pop(); // Schlusspunkt = Startpunkt
+        return p;
+      }).filter(p => p.length >= 3);
+      if (!rings.length) continue;
+      polys.push(rings);
+      for (const p of rings) { parts.push('M' + p.map(q => q[0] + ',' + q[1]).join('L') + 'Z'); punkte += p.length; }
+    }
+    // c = Flächenschwerpunkt der größten Teilfläche (Außenring minus Löcher)
+    const big = polys.map(rings => rings.map(ringStats)).sort((a, b) => b[0].a - a[0].a)[0];
+    const area = big[0].a - big.slice(1).reduce((t, h) => t + h.a, 0);
+    const cx = (big[0].a * big[0].cx - big.slice(1).reduce((t, h) => t + h.a * h.cx, 0)) / area;
+    const cy = (big[0].a * big[0].cy - big.slice(1).reduce((t, h) => t + h.a * h.cy, 0)) / area;
+    states[code] = { name: f.properties.name, d: parts.join(''), c: [r1(cx), r1(cy)] };
+    log(`${code} ${f.properties.name}: ${polys.length} Teilfläche(n), ${parts.length} Ringe`);
+  }
+  const missing = ORDER.filter(c => !states[c]); if (missing.length) throw new Error('Fehlende Länder: ' + missing.join(', '));
+
+  // JSON: eine Zeile je Land, damit Änderungen lesbar bleiben
+  const json = `{"w":${BREITE},"h":${H},"states":{\n` + ORDER.map(c => JSON.stringify(c) + ':' + JSON.stringify(states[c])).join(',\n') + '\n}}\n';
+  log(`Fertig: ${BREITE} × ${H} Einheiten, ${punkte} Punkte, ${(json.length / 1024).toFixed(0)} KB`);
+  window.MAPJSON = json;
+
+  // Vorschau
+  const svg = document.getElementById('preview');
+  svg.setAttribute('viewBox', `-10 -10 ${BREITE + 20} ${H + 20}`);
+  svg.innerHTML = ORDER.map(c => `<path d="${states[c].d}"><title>${c}</title></path>`).join('') + ORDER.map(c => `<circle cx="${states[c].c[0]}" cy="${states[c].c[1]}" r="3"/>`).join('');
+
+  const dl = document.getElementById('dl'); dl.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); dl.hidden = false;
+  const btn = document.getElementById('save'); btn.disabled = false;
+  btn.onclick = async () => {
+    try {
+      const r = await fetch('http://localhost:8001/', { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: json });
+      log('Gespeichert: ' + (await r.text()));
+    } catch (e) { log('Senden fehlgeschlagen (läuft tools/karte-speichern.ps1?): ' + e.message); }
+  };
+}
+main().catch(e => { log('FEHLER: ' + e.message); console.error(e); });
+</script>
+</body>
+</html>

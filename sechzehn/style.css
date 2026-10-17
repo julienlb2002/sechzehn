@@ -1,0 +1,532 @@
+/* Schriften selbst gehostet (assets/fonts, SIL Open Font License, Lizenztexte daneben): je eine variable woff2-Datei, nur Latin,
+   nur die genutzten Gewichte. Keine Anfragen an Google Fonts. */
+@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:600 800;font-display:swap;src:url(assets/fonts/bricolage-grotesque-latin.woff2) format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:400 700;font-display:swap;src:url(assets/fonts/figtree-latin.woff2) format("woff2")}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+/* Layout: eine schmale Spielspalte (max. 500px), mittig. Oben Kopf + Rundenleiste, dann Hinweiskarte, Karte, unten fixierte Aktionsleiste. Kategorien haben eigene Farben.
+   Die Spalte ist mindestens bildschirmhoch; die Karte füllt die Resthöhe über der Aktionsleiste, damit sie auf dem Handy ganz sichtbar bleibt. */
+:root{
+  --bar-h:80px;
+  --bg:#FFFFFF;
+  --ink:#121417;
+  --muted:#6A717B;
+  --line:#E4E7EB;
+  --soft:#F3F4F6;
+  /* Karte: Flächen kühles Mittelgrau, Grenzen als feine Linien in Hintergrundfarbe (--land-stroke), keine Außenkontur.
+     Hover etwas dunkler, Auswahl dunkles Schiefergrau (neutral, nicht mit Rot/Grün zu verwechseln), Kontur der Hervorhebung = --ink. */
+  --land:#B9C1CB;
+  --land-hover:#8E99A6;
+  --land-stroke:#FFFFFF;
+  --land-wrong:#F2B8BB;
+  --sel:#3A4554;
+  --ok:#2E9E4F;
+  --ok-soft:#D9F0E0;
+  --bad:#D64045;
+  --bad-soft:#F6DCDD;
+  /* Gold nur für Volltreffer (richtig mit dem ersten Hinweis). Gehört zur Familie von --ok und --bad: gleiche Helligkeit und Sättigung,
+     flach mit sehr dezentem vertikalem Verlauf (--gold-hi oben, --gold-lo unten je ca. 8 % der Helligkeit heller/dunkler), kein Rand. */
+  --gold:#D19A12;--gold-hi:#E1A614;--gold-lo:#C08E11;--on-gold:#1F1600;
+  --gold-grad:linear-gradient(180deg,var(--gold-hi),var(--gold-lo));
+  /* Eis/Diamant nur für den perfekten Tag (500/500, Animation "Sechzehn Facetten") */
+  --ice-1:#7FB4D6;--ice-2:#A9D3EC;--ice-3:#D6EEFA;--ice-edge:#2D6E96;--glow:rgba(70,150,210,.35);--t0:#3F7FAE;--t1:#6FA9D1;--t2:#A6D3EE;--t3:#DDF1FC;--facet-edge:rgba(255,255,255,.95);
+  --c-politik:#2B59C3;
+  --c-geografie:#0D8A8C;
+  --c-kultur:#8A3FCF;
+  --c-sport:#E0662B;
+  --c-wirtschaft:#6F8A1E; /* Oliv; früher Goldbraun, Gold ist jetzt dem Volltreffer vorbehalten */
+  --c-geschichte:#7A5444;
+  --c-alltag:#C2417A;
+  --c-personen:#8E2F4B; /* Bordeaux (Persönlichkeiten); dunkler und roter als Alltag-Pink, kein Signalrot */
+  --on-cat:#FFFFFF;
+  --font-display:"Bricolage Grotesque","Arial Black",Arial,sans-serif;
+  --font-body:"Figtree","Segoe UI",Helvetica,Arial,sans-serif;
+}
+/* Dunkelmodus: Systemeinstellung, außer der Spieler hat selbst gewählt (data-theme am <html>, gesetzt vom Inline-Script in index.html) */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111315;--ink:#F1F3F5;--muted:#9AA1AA;--line:#2A2E33;--soft:#1C1F23;
+  --land:#353B42;--land-hover:#4E5761;--land-stroke:#111315;--land-wrong:#6B2F34;--sel:#C9D1DA;
+  --ok:#4CC271;--ok-soft:#1D3A26;--bad:#F06A6E;--bad-soft:#3E2224;--gold:#EDBB3F;--gold-hi:#EFC255;--gold-lo:#EBB329;--ice-1:#5C9CC6;--ice-2:#9ACDEB;--ice-3:#E4F6FF;--ice-edge:#F2FBFF;--glow:rgba(150,215,255,.45);--t0:#2C6893;--t1:#4F92C2;--t2:#8EC6E8;--t3:#D8F1FF;--facet-edge:rgba(255,255,255,.85);
+  --c-politik:#4B78E0;--c-geografie:#17A3A5;--c-kultur:#A262E3;--c-sport:#EE7A40;--c-wirtschaft:#7E9B24;--c-geschichte:#9A6D5B;--c-alltag:#DB5C94;--c-personen:#B4486A;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111315;--ink:#F1F3F5;--muted:#9AA1AA;--line:#2A2E33;--soft:#1C1F23;
+  --land:#353B42;--land-hover:#4E5761;--land-stroke:#111315;--land-wrong:#6B2F34;--sel:#C9D1DA;
+  --ok:#4CC271;--ok-soft:#1D3A26;--bad:#F06A6E;--bad-soft:#3E2224;--gold:#EDBB3F;--gold-hi:#EFC255;--gold-lo:#EBB329;--ice-1:#5C9CC6;--ice-2:#9ACDEB;--ice-3:#E4F6FF;--ice-edge:#F2FBFF;--glow:rgba(150,215,255,.45);--t0:#2C6893;--t1:#4F92C2;--t2:#8EC6E8;--t3:#D8F1FF;--facet-edge:rgba(255,255,255,.85);
+  --c-politik:#4B78E0;--c-geografie:#17A3A5;--c-kultur:#A262E3;--c-sport:#EE7A40;--c-wirtschaft:#7E9B24;--c-geschichte:#9A6D5B;--c-alltag:#DB5C94;--c-personen:#B4486A;
+  color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+.app{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100vh;min-height:100dvh;
+  padding-block:12px calc(var(--bar-h) + 12px + env(safe-area-inset-bottom,0px))}
+#main{flex:1 1 auto;display:flex;flex-direction:column;gap:10px;min-height:0}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px} /* Kategoriefarben nur für Kategorien */
+.st:focus{outline:none} /* Tastaturfokus zeigt dieselbe Hervorhebung wie Hover (Hover-Ebene), kein Rechteck */
+
+/* Kopf */
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tools{display:flex;gap:8px}
+.tools.right{justify-content:flex-end}
+/* Umschalter Hell/Dunkel zeigt den aktuellen Modus (Sonne/Mond) */
+#themebtn .moon{display:none}
+/* Ton an/aus: Lautsprecher bzw. durchgestrichener Lautsprecher */
+#soundbtn .off,#soundbtn.muted .on{display:none}
+#soundbtn.muted .off{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #themebtn .sun{display:none}:root:not([data-theme="light"]) #themebtn .moon{display:block}}
+:root[data-theme="dark"] #themebtn .sun{display:none}
+:root[data-theme="dark"] #themebtn .moon{display:block}
+.top h1{margin:0;text-align:center;font-family:var(--font-display);font-weight:800;font-size:2rem;letter-spacing:-.02em;line-height:1}
+.top h1 small{display:block;font-family:var(--font-body);font-weight:500;font-size:.78rem;letter-spacing:.02em;color:var(--muted);margin-top:4px}
+.iconbtn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:transparent;font-weight:700;display:grid;place-items:center}
+.iconbtn svg{fill:currentColor}
+.iconbtn[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Schmale Handys: rechts drei Knöpfe (Hilfe, Ton, Hell/Dunkel), links Statistik und ggf. Diamant – etwas kompakter, damit nichts überläuft */
+@media (max-width:420px){.tools{gap:4px}.iconbtn{width:31px;height:31px}.iconbtn.diabtn{padding:0 7px 0 5px;gap:3px}.top h1{font-size:1.55rem}}
+
+/* Rundenleiste + Punktestand */
+.status{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pips{display:flex;gap:6px}
+.pip{width:30px;height:30px;border-radius:8px;background:var(--soft);display:grid;place-items:center;font-weight:700;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .3s,color .3s,transform .3s}
+.pip.now{background:var(--ink);color:var(--bg)}
+.pip.ok{background:var(--ok);color:#fff}
+.pip.gold{background:var(--gold-grad);color:#fff} /* Volltreffer: wie .pip.ok, nur im Farbton anders */
+.pip.bad{background:var(--bad);color:#fff}
+.score{text-align:right;line-height:1}
+.score b{display:block;font-family:var(--font-display);font-weight:800;font-size:2rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.score span{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.score.bump b{animation:bump .5s ease}
+@keyframes bump{40%{transform:scale(1.18);color:var(--ok)}}
+
+/* Hinweise */
+/* Frühere Hinweise: stehen über der aktuellen Hinweiskarte, vollständig und umbrochen. Noch nicht aufgedeckte Plätze sind ausgeblendet
+   (den Fortschritt zeigen "Hinweis X von 5" und die Punkteleiste). */
+.earlier{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:.9rem;line-height:1.4}
+.earlier:not(.has),.earlier .hint.empty{display:none}
+.earlier .hint{display:grid;grid-template-columns:10px minmax(0,1fr);gap:10px;align-items:start}
+.earlier i{width:10px;height:10px;border-radius:3px;display:block;margin-top:calc((1.4em - 10px) / 2)}
+.card{border-radius:16px;padding:14px 18px 16px;color:var(--on-cat);display:flex;flex-direction:column;gap:8px;animation:deal .35s ease}
+@keyframes deal{from{transform:translateY(8px) rotate(-1deg);opacity:.2}}
+/* Verbrauchte Karte auf dem Weg in die Hinweisliste (Position/Größe setzt flyIntoList) */
+.card.ghost{position:fixed;margin:0;z-index:5;pointer-events:none;transform-origin:0 0;animation:none;overflow:hidden}
+.card .head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.92}
+.card p{margin:0;font-size:1.22rem;font-weight:600;line-height:1.35;text-wrap:pretty}
+/* Punkteskala: eine durchgehende Leiste mit fünf Werten. Die Markierung (.thumb) sitzt auf dem aktuellen Wert
+   und gleitet bei einem falschen Tipp ein Feld weiter; verbrauchte Werte werden blass. */
+.ladder{--i:0;position:relative;display:grid;grid-template-columns:repeat(5,1fr);padding:3px;border-radius:11px;background:var(--soft)}
+.ladder .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px) / 5);border-radius:8px;background:var(--ink);
+  box-shadow:0 2px 8px -2px rgba(0,0,0,.35);transform:translateX(calc(var(--i) * 100%));transition:transform .45s cubic-bezier(.3,1.25,.5,1)}
+.rung{position:relative;z-index:1;padding:6px 0;text-align:center;font-weight:700;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums;
+  transition:color .3s,opacity .35s}
+.rung.gone{opacity:.32}
+.rung.live{color:var(--bg)}
+.stake{position:relative;display:flex;flex-direction:column;gap:6px}
+/* Rundenergebnis liegt über Einsatz und Punkteleiter, damit die Höhe gleich bleibt */
+.stake .verdict{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.96);pointer-events:none;
+  transition:opacity .25s,transform .35s cubic-bezier(.3,1.4,.5,1)}
+.stake.done .verdict{opacity:1;transform:none}
+.stake.done .cap,.stake.done .ladder{visibility:hidden}
+.stake .cap{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+
+/* Karte */
+.mapwrap{position:relative;flex:1 1 0;min-height:180px}
+.mapwrap svg{position:absolute;inset:0;width:100%;height:100%;max-width:380px;margin:0 auto;display:block;touch-action:manipulation}
+/* Basiskarte (buildMap in app.js): ein Pfad je Land, Grenzen als feine Linien in Hintergrundfarbe (1,3 px auf dem Bildschirm),
+   Stadtstaaten zuletzt gezeichnet. Die Pfade bewegen sich nie (kein transform, keine Umsortierung, nie ausgeblendet); Zustände ändern
+   nur die Füllung. Keine Außenkontur: die Karte hebt sich über die Flächenfarbe ab. */
+.st{fill:var(--land);stroke:var(--land-stroke);stroke-width:1.3px;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd;
+  cursor:pointer;transition:fill .12s ease-out}
+.st.wrong{fill:var(--land-wrong);cursor:not-allowed}
+.st.flash{animation:flash .6s ease}
+@keyframes flash{0%,40%{fill:var(--bad)}}
+.st.right{fill:var(--ok)}
+.st.miss{fill:var(--bad)}
+/* Hervorhebungsebene: genau zwei Pfade (Auswahl/Lösung, Hover), die den Umriss des Landes per setAttribute('d') übernehmen.
+   Nur Füllung und Kontur, 2 px Kontur in Textfarbe (hell dunkel, dunkel hell), Übergang nur auf fill (120 ms ease-out). Ohne .on ist
+   die Füllung durchsichtig und die Kontur aus, der Umriss darf liegen bleiben. Keine Bewegung, kein Schatten. */
+.hls{pointer-events:none}
+.hl{fill:transparent;stroke:none;stroke-width:2px;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd;transition:fill .12s ease-out}
+.hl.on{stroke:var(--ink)}
+.hl.hov.on{fill:var(--land-hover)}
+.hl.sel.on,.hl.hov.on.issel{fill:var(--sel)}
+/* Gelöst: Füllung über den Verlauf #gold-grad (in buildMap, senkrecht wie 180°). Seine Stopps sind normal alle grün (= flaches --ok).
+   Volltreffer: jackpot() setzt .jackpot an die Karte, die Stopps werden sofort golden und gleiten nach 1 s weich (0,5 s) zurück ins Grün. */
+.hl.sel.on.right{fill:url(#gold-grad)}
+#gold-grad stop{stop-color:var(--ok);transition:stop-color .5s ease-in-out}
+.jackpot #gold-grad stop{transition:none}
+.jackpot #gold-grad stop:nth-child(1){stop-color:var(--gold-hi)}
+.jackpot #gold-grad stop:nth-child(2){stop-color:var(--gold-lo)}
+.hl.sel.on.miss{fill:var(--bad)}
+.hit{fill:transparent;cursor:pointer}
+.hit.off{display:none}
+/* Ländernamen. Die SVG-Karte wird skaliert; --u (Karteneinheiten pro Bildschirmpixel) setzt sizeMap(). Ziel bei 1920×1080 (u ≈ 1,14 bei 800 Einheiten Kartenbreite):
+   17 px Bildschirmgröße = 19,5 Karteneinheiten, Lösung 19,5 px = 22,4 Einheiten. Nach oben begrenzt auf genau diese Karteneinheiten,
+   damit die Namen auf kleineren Karten nicht über die Grenzen wachsen (sie werden dort proportional kleiner, mindestens 11 bzw. 12 px).
+   Positionen: LABELS in app.js, geprüft bei 1920×1080 (alle 16 Namen gleichzeitig und jedes Lösungsschild: keine Überlappung,
+   keine Grenzüberschreitung). Normale Namen: Textfarbe mit Kontur in Hintergrundfarbe, dadurch auf jeder Landesfarbe lesbar. */
+.lab{pointer-events:none}
+.lab:not(.show){display:none}
+.lab text{font-family:var(--font-body);font-weight:700;font-size:clamp(calc(11px * var(--u,1)),calc(17px * var(--u,1)),19.5px);fill:var(--ink);
+  paint-order:stroke;stroke:var(--bg);stroke-width:calc(4px * var(--u,1));stroke-linejoin:round}
+.lab .lead{stroke:var(--ink);stroke-width:calc(1.25px * var(--u,1));stroke-linecap:round;opacity:.75}
+.lab .dot{fill:var(--ink)}
+.lab .pill{display:none}
+/* Lösung: Name auf einem kräftigen Schild, deutlich von den falsch getippten Ländern abgesetzt */
+.lab.answer text{fill:var(--bg);stroke:none;font-weight:800;font-size:clamp(calc(12px * var(--u,1)),calc(19.5px * var(--u,1)),22.4px)}
+.lab.answer .pill{display:inline;fill:var(--ink);filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.lab.answer .lead{opacity:1}
+.mapwrap.static .st{cursor:default}
+/* Punkte-Abzeichen über dem gelösten Land (Position setzt pointsBadge). Nur Position und Deckkraft animieren, damit die Schrift scharf bleibt. */
+.burst{position:absolute;z-index:3;transform:translate(-50%,-100%);padding:7px 14px 8px;border-radius:999px;background:var(--ok);color:#fff;
+  font-family:var(--font-display);font-weight:800;font-size:1.35rem;line-height:1;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap;
+  box-shadow:0 8px 20px -6px rgba(0,0,0,.45),0 0 0 3px var(--bg);pointer-events:none;-webkit-font-smoothing:antialiased;
+  animation:rise 1.6s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{
+  0%{opacity:0;transform:translate(-50%,-60%)}
+  14%{opacity:1;transform:translate(-50%,-100%)}
+  70%{opacity:1;transform:translate(-50%,-150%)}
+  100%{opacity:0;transform:translate(-50%,-185%)}}
+/* Volltreffer: "Volltreffer! +100" golden und etwas größer; Konfetti auf einem Canvas über der Karte (confetti() in app.js) */
+.burst.gold{background:var(--gold-grad);color:var(--on-gold);font-size:1.6rem;padding:9px 18px 10px}
+.confetti{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+/* Glanzlicht: ein schräger, halbtransparenter weißer Streifen (30 % Breite) wandert einmal über das goldene Element (0,8 s, ease-in-out).
+   Rundenindikator: replay(pip, 'shine') beim Volltreffer; Endbildschirm: Klasse shine mit Startzeit --sd. Keine Dauerschleife.
+   Bei "Bewegung reduzieren" laufen keine Animationen, der Streifen bleibt außerhalb des Elements unsichtbar. */
+.pip.gold,.cell.gd{position:relative;overflow:hidden}
+.shine::after{content:"";position:absolute;inset:0;pointer-events:none;transform:translateX(-120%);
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.7) 50%,transparent 65%);
+  animation:sheen .8s ease-in-out var(--sd,0ms) 1 both}
+@keyframes sheen{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
+/* Funkelsterne am Rundenindikator (sparkles() in app.js), vierzackig, auf- und abblendend */
+.pips{position:relative}
+.spark{position:absolute;pointer-events:none;background:linear-gradient(135deg,var(--gold-hi),var(--gold));
+  clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);
+  animation:sparkle .6s ease-in-out both}
+@keyframes sparkle{0%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}100%{opacity:0;transform:scale(.2) rotate(90deg)}}
+
+.verdict{text-align:center;font-weight:700;font-size:1rem;padding:8px 10px;border-radius:12px}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* Aktionsleiste */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);
+  padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar .in{max-width:500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px}
+.btn{flex:1;white-space:nowrap;border:0;border-radius:999px;padding:15px 20px;font-weight:700;font-size:1.05rem;background:var(--ink);color:var(--bg);transition:transform .1s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);flex:0 0 auto}
+.shake{animation:shake .4s ease}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* Auswertung */
+.end{display:flex;flex-direction:column;gap:16px;text-align:center;align-items:center;padding-top:8px}
+.end .big{font-family:var(--font-display);font-weight:800;font-size:4.5rem;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.end .of{color:var(--muted);font-weight:600;margin-top:-8px}
+/* Ergebnisraster als festes Spaltenraster: Kästchen immer gleich groß, Namen bündig, Punkte rechtsbündig */
+.grid{display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px}
+.grow{display:grid;grid-template-columns:repeat(5,30px) minmax(0,1fr) 36px;gap:6px;align-items:center}
+.cell{--fc:var(--soft);width:30px;height:30px;border-radius:7px;background:var(--fc)}
+.cell.r{--fc:var(--bad)}
+.cell.g{--fc:var(--ok)}
+.cell.gd{--fc:var(--gold-grad)} /* Volltreffer-Runde auf dem Endbildschirm */
+/* Aufdecken direkt nach dem Spiel: Kästchen drehen sich nacheinander um (Startzeit --d), die Farbe wechselt hochkant.
+   Name und Punkte einer Zeile erscheinen, sobald ihr letztes Kästchen aufgedeckt ist. Takt: REVEAL in app.js. */
+.reveal .cell{animation:flip .4s ease-in-out var(--d) both}
+@keyframes flip{
+  0%{transform:rotateX(0);background:var(--soft)}
+  49.9%{transform:rotateX(90deg);background:var(--soft)}
+  50%{transform:rotateX(90deg);background:var(--fc)}
+  100%{transform:rotateX(0);background:var(--fc)}}
+.reveal .grow span,.reveal .grow em{animation:fadein .3s ease-out var(--d) both}
+@keyframes fadein{from{opacity:0;transform:translateX(-4px)}}
+.grow span{text-align:left;font-size:.9rem;font-weight:600;line-height:1.15;padding-left:8px;min-width:0;overflow-wrap:anywhere}
+.grow em{font-style:normal;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+/* Auf der Auswertung stehen Punkte und Rundenverlauf schon im Raster: Rundenleiste oben ausblenden */
+body:not(.playing) .status{display:none}
+.note{color:var(--muted);font-size:.85rem;min-height:1.2em;margin:0}
+.next{margin:0;font-weight:600;color:var(--muted)}
+.next b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:700}
+.statnote{margin:0;color:var(--muted);font-size:.85rem}
+/* Auswertung: Teilen steht direkt unter dem Countdown (nicht in der festen Leiste), darunter eine dezente Statistikzeile.
+   Die ganze Statistik steht im Statistikfenster (Kopfzeile oder "Alle Statistiken →"). */
+body[data-view="end"] .bar{display:none}
+body[data-view="end"] .app{padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+.end .actions{display:flex;flex-wrap:wrap;gap:10px;width:100%;max-width:420px}
+.end .note:empty{display:none}
+.statline{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.statline b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;display:inline-block}
+.statline .rec{font-style:normal;font-weight:700;color:var(--ok)}
+.statline .up{animation:streakUp .9s cubic-bezier(.3,1.5,.5,1)}
+@keyframes streakUp{25%{transform:scale(1.18);color:var(--ok)}60%{color:var(--ok)}}
+.statline .rec.pop{display:inline-block;animation:recordPop .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes recordPop{from{opacity:0;transform:scale(.9)}}
+.linkbtn{padding:0;border:0;background:none;color:var(--ink);font-weight:700;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.linkbtn:hover{text-decoration-color:currentColor}
+.sharetext{width:100%;max-width:420px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font:inherit;font-size:.85rem;resize:none}
+.copybuf{position:fixed;left:-9999px;top:0;opacity:0}
+
+/* Kopfzeile: Diamant mit Anzahl der perfekten Tage (ab 1) */
+.iconbtn.diabtn{width:auto;padding:0 10px 0 8px;border-radius:999px;display:inline-flex;align-items:center;gap:5px;font-size:.85rem;font-variant-numeric:tabular-nums}
+
+/* Statistikfenster: von rechts (Desktop 560px, Handy ganze Breite), volle Höhe, eigener Scrollbereich; der Rest abgedunkelt.
+   Ein- und Ausblenden 200 ms (bei "Bewegung reduzieren" ohne, globale Regel am Ende). */
+body.noscroll{overflow:hidden}
+.drawer{position:fixed;inset:0;z-index:50}
+.drawer .scrim{position:absolute;inset:0;background:rgba(10,12,15,.45);opacity:0;transition:opacity .2s ease}
+.drawer .panel{position:absolute;top:0;right:0;bottom:0;width:min(560px,100%);overflow-y:auto;overscroll-behavior:contain;background:var(--bg);
+  border-left:1px solid var(--line);box-shadow:-18px 0 40px -24px rgba(0,0,0,.45);padding:20px 28px 32px;display:flex;flex-direction:column;gap:26px;
+  transform:translateX(24px);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}
+.drawer.open .scrim{opacity:1}
+.drawer.open .panel{transform:none;opacity:1}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.phead h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:1.5rem;letter-spacing:-.01em}
+.pclose{font-size:.95rem}
+.ps{display:flex;flex-direction:column;gap:10px}
+.ps h3{margin:0;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.ps .cap{margin:0;font-size:.75rem;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.kpi{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px 10px;border-radius:12px;background:var(--soft);text-align:center}
+.kpi b{font-family:var(--font-display);font-weight:800;font-size:1.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.72rem;font-weight:600;line-height:1.15;color:var(--muted)}
+/* Abzeichen: noch nicht erreicht = ausgegraut */
+.badges{display:flex;flex-direction:column;gap:8px}
+.badge{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.badge .bicon{display:grid;place-items:center}
+.badge b{display:block;font-weight:700}
+.badge p{margin:2px 0 0;font-size:.85rem;color:var(--muted);line-height:1.35}
+.badge:not(.locked) .gem{filter:drop-shadow(0 0 6px var(--glow))}
+.badge.locked{background:var(--soft);border-color:transparent}
+.badge.locked .bicon{filter:grayscale(1);opacity:.4}
+.badge.locked b{color:var(--muted)}
+/* Kalender: 7 Spalten × 5 Wochen, Kästchen 30px. Grün in drei Stufen (gemischt mit dem Hintergrund: hell zarter, dunkel dunkler),
+   500 = Diamant-Kästchen wie im Ergebnisraster, heute mit Rahmen. */
+.cal{position:relative;align-self:flex-start}
+.calgrid{display:grid;grid-template-columns:repeat(7,30px);gap:5px}
+.calgrid span{font-size:.68rem;font-weight:700;color:var(--muted);text-align:center}
+.calgrid i,.legend i{display:block;width:30px;height:30px;border-radius:7px;background:var(--soft);box-shadow:inset 0 0 0 1px var(--line)}
+.calgrid i.future{background:none;box-shadow:inset 0 0 0 1px var(--line);opacity:.4}
+.calgrid i.l1,.legend i.l1{background:color-mix(in srgb,var(--ok) 35%,var(--bg));box-shadow:none}
+.calgrid i.l2,.legend i.l2{background:color-mix(in srgb,var(--ok) 65%,var(--bg));box-shadow:none}
+.calgrid i.l3,.legend i.l3{background:var(--ok);box-shadow:none}
+.calgrid i.dia,.legend i.dia{background:linear-gradient(135deg,var(--ice-3),var(--ice-2) 50%,var(--ice-1));box-shadow:0 0 7px var(--glow)}
+.calgrid i.today{outline:2px solid var(--ink);outline-offset:2px}
+.caltip{position:absolute;z-index:2;padding:4px 8px;border-radius:6px;background:var(--ink);color:var(--bg);font-size:.75rem;font-weight:600;white-space:nowrap;pointer-events:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.72rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:12px;height:12px;border-radius:3px}
+/* "Gelöst mit Hinweis": waagerechte Balken, neutral grau, nur der höchste Wert grün, Anzahl am Balkenende */
+.hbars{display:flex;flex-direction:column;gap:6px}
+.hrow{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:center}
+.hrow>span{font-size:.8rem;font-weight:700;color:var(--muted);text-align:center}
+.htrack{display:flex;align-items:center;gap:8px;min-width:0}
+.htrack i{display:block;height:18px;min-width:3px;max-width:calc(100% - 36px);border-radius:0 5px 5px 0;background:var(--land)}
+.htrack em{font-style:normal;font-size:.8rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.hrow.hmax i{background:var(--ok)}
+.hrow.hmax em,.hrow.hmax>span{color:var(--ink)}
+/* Volltreffer-Karte: je mit dem ersten Hinweis gelöste Länder in Gold, Rest neutral */
+.hitmap{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;align-items:center}
+.hitmap svg{width:100%;height:auto;display:block}
+.hitmap path{fill:var(--land);stroke:var(--bg);stroke-width:1px;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd}
+.hitmap path.hit{fill:var(--gold)}
+.hitmap b{display:block;font-family:var(--font-display);font-weight:800;font-size:1.8rem;line-height:1.1}
+.hitmap p{margin:4px 0 0;font-size:.85rem;color:var(--muted);line-height:1.4}
+/* Teilen-Fenster: Handy von unten (Blatt), Desktop mittig als Dialog. Vorschau des Bildes verkleinert, Formatwahl als Segmente,
+   Sticker-Vorschau auf Schachbrett (transparenter Hintergrund). */
+.drawer.dialog .panel{top:auto;left:0;right:0;bottom:0;width:100%;max-height:94vh;max-height:94dvh;border-left:0;border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;padding:16px 20px calc(20px + env(safe-area-inset-bottom,0px));gap:14px;transform:translateY(32px);box-shadow:0 -18px 40px -24px rgba(0,0,0,.45)}
+.drawer.dialog.open .panel{transform:none}
+@media (min-width:880px) and (min-height:540px){
+  .drawer.dialog .panel{top:50%;left:50%;right:auto;bottom:auto;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 48px);
+    border:1px solid var(--line);border-radius:18px;padding:20px 26px 24px;transform:translate(-50%,-47%)}
+  .drawer.dialog.open .panel{transform:translate(-50%,-50%)}
+}
+.sformats{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--soft);align-self:center}
+.sformats label{position:relative}
+.sformats input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.sformats span{display:block;padding:7px 16px;border-radius:999px;font-weight:700;font-size:.9rem;color:var(--muted)}
+.sformats input:checked+span{background:var(--bg);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.sformats input:focus-visible+span{outline:3px solid var(--ink);outline-offset:1px}
+.spreview{display:grid;place-items:center;min-height:0}
+.spreview canvas{display:block;max-width:100%;height:auto;max-height:min(46vh,520px);width:auto;border-radius:12px;box-shadow:0 6px 24px -10px rgba(0,0,0,.45);outline:1px solid var(--line)} /* Rand: Bild im gleichen Modus wie das Fenster */
+.spreview[data-fmt="sticker"] canvas{box-shadow:none;background:repeating-conic-gradient(#8a8f96 0 25%,#6c7178 0 50%) 0 0/28px 28px}
+.sactions{display:flex;flex-wrap:wrap;gap:8px}
+.sactions .btn{flex:1 1 100%;padding:12px 18px;font-size:1rem}
+.sactions .btn.ghost{flex:1 1 0}
+.drawer.dialog .note:empty{display:none}
+.drawer.dialog .sharetext{max-width:none}
+/* Entwicklermodus &bild=…: nur das Teilen-Bild 1:1 (für Screenshots); Sticker auf mittlerem Grau wie über einem Foto */
+body.sharebild{margin:0;padding:0;background:#777}
+body.sharebild canvas{display:block}
+@media (max-width:420px){.drawer .panel{padding:16px 16px 28px}.hitmap{grid-template-columns:120px minmax(0,1fr)}.calgrid{grid-template-columns:repeat(7,minmax(0,30px))}}
+
+/* Impressum und Datenschutz (eigene Seiten) und dezente Links dorthin (Hilfe-Blatt, Startbildschirm) */
+.legalpage .legal{max-width:640px;margin:0 auto;padding:28px 0 64px;line-height:1.55}
+.legal h1{font-family:var(--font-display);font-weight:800;font-size:2rem;letter-spacing:-.02em;margin:18px 0 8px}
+.legal h2{font-size:1.05rem;margin:26px 0 6px}
+.legal p{margin:0 0 10px}
+.legal a{color:var(--ink)}
+.legal .back a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.9rem}
+.legal .todo{padding:8px 12px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 8px 8px 0;color:var(--muted)}
+.legallinks{margin:0;font-size:.78rem;color:var(--muted);text-align:center}
+.legallinks a{color:inherit;text-decoration:none}
+.legallinks a:hover{text-decoration:underline}
+.sheet .legallinks{text-align:left}
+.intro .legallinks{order:9} /* Startbildschirm: ganz unten in der linken Spalte */
+/* Entwicklermodus (?dev=1) */
+.devpanel{position:fixed;right:12px;bottom:calc(var(--bar-h) + 12px);z-index:30;max-width:270px;padding:8px 12px;border:1.5px dashed var(--muted);border-radius:12px;
+  background:var(--bg);font-size:.8rem;box-shadow:0 10px 24px -12px rgba(0,0,0,.4)}
+body[data-view="end"] .devpanel{bottom:12px} /* auf der Auswertung gibt es keine feste Leiste */
+.devpanel summary{cursor:pointer;font-weight:700}
+.devpanel p{margin:6px 0}
+.devpanel label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.devpanel input{width:90px;font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.devpanel button{display:block;width:100%;margin-top:6px;padding:5px;border:1px solid var(--line);border-radius:8px;background:var(--soft);font-weight:600}
+.devpanel output{display:block;margin-top:6px;color:var(--muted);white-space:pre-line}
+
+/* Karte der Auswertung nur auf dem Desktop (Handyansicht folgt später) */
+.end ~ .mapwrap{display:none}
+
+/* Hilfe */
+.sheet{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:var(--soft);display:flex;flex-direction:column;gap:10px}
+.sheet h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:1.3rem}
+.sheet p{margin:0;font-size:.95rem}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cats span{color:var(--on-cat);font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+.days{display:flex;gap:6px;align-items:center;font-size:.85rem;color:var(--muted)}
+.days button{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:4px 12px;font-weight:600}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Startbildschirm (im normalen Seitenrahmen, mit derselben Kopfzeile): die 16 Länder setzen sich zur Karte zusammen,
+   dann Regeln und "Spielen"/"Weiterspielen". Neutrale Farben, Kategoriefarben bleiben den Kategorien vorbehalten. */
+.mapwrap.logo{order:-1;flex:1 1 150px;min-height:150px;pointer-events:none} /* Handy: Karte füllt den freien Platz über dem Text. Nicht anklickbar. */
+.mapwrap.logo .lands path{fill:var(--land);stroke:var(--land-stroke);stroke-width:1px;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd;transform-box:fill-box;transform-origin:center;
+  animation:landIn .55s cubic-bezier(.3,1.45,.5,1) calc(var(--i) * 45ms) both}
+@keyframes landIn{from{opacity:0;transform:scale(.3)}}
+/* Demo auf der Startkarte (startIntroDemo in app.js, Tempo in DEMO_CONFIG): exakt die Farben des Spiels. Fehltipp --bad, beim nächsten
+   Tipp --land-wrong, richtig --ok, Volltreffer im ersten Tipp --gold (flach, damit Ein- und Ausblenden weich bleiben). Hover wie im Spiel.
+   Übergänge über --demo-fade, ease-in-out. */
+.mapwrap.logo .lands path{transition:fill var(--demo-fade,.8s) ease-in-out}
+.mapwrap.logo .lands path.demo-wrong{fill:var(--bad)}
+.mapwrap.logo .lands path.demo-pale{fill:var(--land-wrong)}
+.mapwrap.logo .lands path.demo-right{fill:var(--ok)}
+.mapwrap.logo .lands path.demo-gold{fill:var(--gold)}
+.mapwrap.logo .hl{stroke:var(--ink);stroke-opacity:0;transition:fill var(--demo-fade,.8s) ease-in-out,stroke-opacity var(--demo-fade,.8s) ease-in-out}
+.mapwrap.logo .hl.on{stroke-opacity:1}
+
+/* Startbildschirm, linke Spalte: ruhig und neutral, die Farbe kommt von der Karte (einzige Ausnahme: das goldene "100").
+   Überschrift, drei Schritte mit feinen Trennlinien (große gedämpfte Ziffer, fette Kurzüberschrift, eine Zeile Erklärung),
+   Punkteleiter, drei Kacheln im Stil der Statistik, darunter der Button. */
+.intro{display:flex;flex-direction:column;gap:22px;max-width:440px;margin:0 auto;width:100%}
+.intro .tag{margin:0;font-family:var(--font-display);font-weight:800;font-size:1.6rem;line-height:1.15;letter-spacing:-.02em;text-align:center}
+.steps{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.steps li{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.steps .num{font-family:var(--font-display);font-weight:800;font-size:1.9rem;line-height:1;color:var(--muted);opacity:.75}
+.steps b{display:block;font-weight:700;line-height:1.3}
+.steps p{margin:3px 0 0;color:var(--muted);font-size:.92rem;line-height:1.4}
+.ladder-mini{display:flex;gap:6px;margin-top:9px}
+.ladder-mini span{min-width:38px;padding:3px 0;border-radius:6px;background:var(--soft);color:var(--muted);font-size:.78rem;font-weight:700;
+  text-align:center;font-variant-numeric:tabular-nums}
+.ladder-mini .gd{background:var(--gold-grad);color:var(--on-gold)} /* 100 = Volltreffer */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.fact{display:flex;flex-direction:column;gap:3px;min-width:0;padding:9px 10px 10px;border-radius:10px;background:var(--soft)}
+.fact span{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.fact b{font-family:var(--font-display);font-weight:800;font-size:clamp(.95rem,1.25vw,1.15rem);line-height:1.15;overflow-wrap:anywhere}
+.intro .tag,.steps li,.facts,body[data-view="intro"] .bar .btn{animation:introUp .5s cubic-bezier(.2,.7,.3,1) both}
+.intro .tag{animation-delay:.45s}
+.steps li:nth-child(1){animation-delay:.6s}.steps li:nth-child(2){animation-delay:.68s}.steps li:nth-child(3){animation-delay:.76s}
+.facts{animation-delay:.86s}body[data-view="intro"] .bar .btn{animation-delay:.92s}
+@keyframes introUp{from{opacity:0;transform:translateY(12px)}}
+.intro.out,.mapwrap.logo.out,.btn.out{animation:introOut .28s ease-in forwards;pointer-events:none}
+@keyframes introOut{to{opacity:0;transform:translateY(-14px)}}
+
+/* Desktop: ein Raster für Start, Spiel und Auswertung, damit Breite und Kopfzeile nie springen.
+   Links Text und Button (Spiel: Hinweise, Punkteskala), rechts die große Karte über die ganze Höhe.
+   #main wird mit display:contents aufgelöst, damit seine Teile direkt im Raster von .app liegen. Grenzwerte = DESKTOP in app.js. */
+@media (min-width:880px) and (min-height:540px){
+  .app{max-width:1200px;display:grid;grid-template-columns:clamp(320px,34vw,420px) minmax(0,1fr);
+    grid-template-rows:auto auto auto auto auto auto auto 1fr;column-gap:64px;row-gap:14px;
+    height:100vh;height:100dvh;min-height:0;padding-block:20px 28px}
+  #main{display:contents}
+  .top{grid-column:1/-1;grid-row:1}
+  #sheet{grid-column:1;grid-row:2}
+  .status{grid-column:1;grid-row:3}
+  .earlier{grid-column:1;grid-row:4;margin-top:6px}
+  .cardslot{grid-column:1;grid-row:5}
+  .stake{grid-column:1;grid-row:6}
+  .intro,.end{grid-column:1;grid-row:3/7;align-self:start;padding-top:24px}
+  /* Startbildschirm: linke Spalte (Text und Button) vertikal zur Karte zentriert; Zeilen 3 und 6 sind gleich große Puffer */
+  body[data-view="intro"] .app{grid-template-rows:auto auto 1fr auto auto 1fr}
+  body[data-view="intro"] .intro{grid-row:4;padding-top:0}
+  body[data-view="intro"] .app > .bar{grid-row:5;padding-top:22px}
+  .app > .bar{grid-column:1;grid-row:7;position:static;padding:6px 0 0;border:0;background:none}
+  .app > .bar .in{max-width:none}
+  .mapwrap,.end ~ .mapwrap{display:block;grid-column:2;grid-row:2/-1;min-height:0}
+  .mapwrap svg{max-width:none}
+  /* Auswertung: Ist die linke Spalte höher als das Fenster, wächst das Raster mit. Die Karte bleibt trotzdem genau so hoch wie der
+     sichtbare Bereich unter der Kopfzeile (20px Rand + Kopfzeile + 14px Abstand ≈ 82px oben, 28px unten) und bleibt beim Scrollen stehen. */
+  body[data-view="end"] .mapwrap{align-self:start;position:sticky;top:20px;height:calc(100vh - 110px);height:calc(100dvh - 110px)}
+  /* Start und Auswertung linksbündig wie die Spielspalte */
+  .intro{max-width:none;margin:0}
+  .intro .tag{font-size:1.9rem;text-wrap:balance;text-align:left}
+  .end{align-items:flex-start;text-align:left}
+  .end .grid{max-width:none}
+}
+
+/* Niedrige Handys (z. B. iPhone SE): engere Abstände, kompaktere Karte, damit die Deutschlandkarte Platz behält */
+@media (max-height:740px){
+  /* Startbildschirm auf niedrigen Handys verdichten, damit er ohne Scrollen passt (Desktop-Raster ist davon nicht betroffen) */
+  .intro{gap:10px}
+  .intro .tag{font-size:1.3rem}
+  .steps li{padding:7px 0;gap:10px}
+  .steps .num{font-size:1.4rem}
+  .steps b{font-size:.95rem}
+  .steps p{font-size:.82rem;line-height:1.3;margin-top:1px}
+  .ladder-mini{margin-top:5px}
+  .fact{padding:6px 8px 7px}
+  .mapwrap.logo{flex-basis:90px;min-height:90px}
+  .app{gap:10px;padding-top:8px}
+  #main{gap:8px}
+  .top{padding-bottom:8px}
+  .top h1 small{display:none}
+  .card{padding:12px 16px 14px;gap:6px}
+  .card p{font-size:1.1rem}
+  .pip{width:28px;height:28px}
+  .score b{font-size:1.6rem}
+  .earlier{font-size:.85rem;gap:4px}
+  .stake .cap{display:none} /* die hervorgehobene Punktestufe zeigt den Einsatz bereits */
+  .stake .verdict{padding:0 10px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* "Sechzehn Facetten" (perfekter Tag, 500/500; facetsStart in app.js, Zeiten in FACETTEN_CONFIG): Die Karte wird zum Diamanten.
+   Facetten = eigene Ebene über der Basiskarte, je Land ein Pfad mit eigenem Verlauf (Ton --t0…--t3 und Lichtrichtung fest je Land,
+   FACETS in app.js; Nachbarn nie gleicher Ton), weiße Schliffkanten (--facet-edge). Weiches Leuchten dahinter, Lichtstrahl als weitere
+   Ebene (mix-blend-mode: screen), Funken als kleine Sterne. Die Basispfade bleiben unverändert und bewegen sich nicht.
+   --ice-1/2/3 nur noch für Punktzahl und Diamant-Felder im Raster. */
+.st.fgold{fill:var(--gold)}
+.facets{pointer-events:none}
+.facets path{stroke:var(--facet-edge);stroke-width:1.2px;vector-effect:non-scaling-stroke;stroke-linejoin:round;fill-rule:evenodd;
+  opacity:0;transition:opacity var(--ff,.7s) ease-in-out var(--fd,0ms)}
+.facets path.on{opacity:1}
+.facets-now .facets path,.facets-now .facet-glow{transition:none!important}
+.facet-glow{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.2s ease-in-out;
+  background:radial-gradient(ellipse 50% 50% at 50% 50%,color-mix(in srgb,var(--glow) 70%,transparent) 0%,color-mix(in srgb,var(--glow) 45%,transparent) 55%,transparent 100%)}
+.facet-glow.on{opacity:1}
+.mapwrap.static svg{z-index:1}
+.beam{mix-blend-mode:screen;pointer-events:none}
+.fspark{position:absolute;z-index:3;pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;background:#fff;
+  clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);filter:drop-shadow(0 0 2px var(--ice-edge));
+  animation:fspark .9s ease-in-out both}
+@keyframes fspark{0%{opacity:0;transform:scale(.1) rotate(0)}45%{opacity:1;transform:scale(1) rotate(22deg)}100%{opacity:0;transform:scale(.3) rotate(45deg)}}
+.facet-kicker{margin:0 0 4px;font-size:.75rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ice-edge);opacity:0;transition:opacity .8s ease}
+.facet-head{margin:0 0 6px;font-family:var(--font-display);font-weight:800;font-size:1.25rem;line-height:1.2;opacity:0;transform:translateY(6px);transition:opacity .8s ease,transform .8s ease}
+.facet-kicker.on,.facet-head.on{opacity:1;transform:none}
+/* Punktzahl: nur Verlaufsfüllung. Endet in --ice-edge (hell dunkelblau, dunkel fast weiß), damit sie in beiden Modi lesbar bleibt. */
+.end .big.ice{background:linear-gradient(160deg,var(--ice-2),var(--ice-1) 50%,var(--ice-edge));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cell.dia{--fc:linear-gradient(135deg,var(--ice-3),var(--ice-2) 50%,var(--ice-1));box-shadow:0 0 8px var(--glow)}
+.facet-replay{margin-top:6px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);font-size:.78rem;font-weight:600}
+.facet-replay:hover{color:var(--ink);border-color:var(--muted)}

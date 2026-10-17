@@ -1,0 +1,50 @@
+# Veröffentlicht die Website auf GitHub Pages, bei jedem Push auf main (oder per Hand unter "Actions").
+# Es wird nur das Spiel ausgeliefert (Liste unten), nicht tools/, .claude/, CLAUDE.md oder Screenshots.
+# Die öffentliche Adresse steht nur in sechzehn/app.js (CONFIG.SITE_URL); dieser Schritt setzt sie in die Link-Vorschau von index.html ein.
+name: Website veröffentlichen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Website zusammenstellen
+        working-directory: sechzehn
+        run: |
+          set -euo pipefail
+          mkdir -p ../_site
+          cp index.html impressum.html datenschutz.html app.js style.css sound.js teilen.js manifest.webmanifest ../_site/
+          cp -r data assets ../_site/
+          URL=$(grep -oP "SITE_URL:\s*'\K[^']+" app.js)
+          if [ -z "$URL" ] || echo "$URL" | grep -q 'GITHUB-NAME'; then echo "CONFIG.SITE_URL in app.js ist nicht gesetzt: '$URL'"; exit 1; fi
+          sed -i "s#%SITE_URL%#${URL}#g" ../_site/index.html
+          if grep -q '%SITE_URL%' ../_site/index.html; then echo 'Platzhalter in index.html nicht ersetzt'; exit 1; fi
+          touch ../_site/.nojekyll
+          echo "Adresse: $URL"; find ../_site -type f | sort
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

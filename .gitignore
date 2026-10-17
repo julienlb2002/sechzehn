@@ -1,0 +1,10 @@
+# Entwickler-Material, nicht im Repository
+sechzehn/screenshots/
+*.zip
+
+# Lokale Einstellungen von Claude Code und Editoren
+.claude/settings.local.json
+.vscode/
+Thumbs.db
+desktop.ini
+.DS_Store
