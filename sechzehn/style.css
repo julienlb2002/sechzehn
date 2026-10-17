@@ -371,7 +371,6 @@ body.sharebild canvas{display:block}
 .legal p{margin:0 0 10px}
 .legal a{color:var(--ink)}
 .legal .back a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.9rem}
-.legal .todo{padding:8px 12px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 8px 8px 0;color:var(--muted)}
 .legallinks{margin:0;font-size:.78rem;color:var(--muted);text-align:center}
 .legallinks a{color:inherit;text-decoration:none}
 .legallinks a:hover{text-decoration:underline}
