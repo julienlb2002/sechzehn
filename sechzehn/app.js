@@ -199,6 +199,8 @@ function buildMap(interactive = true) {
   for (const id of ORDER) m.lab[id] = buildLabel(id, labs);
   if (!interactive) return m;
   for (const id in SMALL) { const [x, y] = MAP.states[id].c; m.hit[id] = svgEl('circle', { cx: x, cy: y, r: SMALL[id], class: 'hit', 'data-id': id }, hits); }
+  // Handy: zusätzlich eine Tippfläche fürs Saarland (Desktop: Radius 0); Radien aller Tippflächen setzt touchHits() in Bildschirm-Pixeln
+  { const [x, y] = MAP.states.SL.c; m.hit.SL = svgEl('circle', { cx: x, cy: y, r: 0, class: 'hit', 'data-id': 'SL' }, hits); }
   // Hover (nur bei echter Maus und @media (hover: hover)) oder Tastaturfokus: Umriss des Landes auf den Hover-Pfad legen
   m.hover = id => {
     if (id && (state.done || state.wrong.includes(id))) id = null; // nur wählbare Länder hervorheben
@@ -213,7 +215,7 @@ function buildMap(interactive = true) {
   base.addEventListener('focusin', e => m.hover(idOf(e) || null));
   base.addEventListener('focusout', () => m.hover(null));
   svg.addEventListener('mousedown', e => e.preventDefault()); // Mausklick setzt keinen Fokus (sonst Fokusrahmen um das Land)
-  svg.addEventListener('click', e => { const id = idOf(e); if (id) pick(id); });
+  svg.addEventListener('click', e => { if (m.zoom && m.zoom.swallow(e)) return; const id = idOf(e); if (id) pick(id); });
   svg.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && idOf(e)) { e.preventDefault(); pick(idOf(e)); } });
   return m;
 }
@@ -255,20 +257,175 @@ function layoutLabels(m) {
 // Mittelpunkt eines Landes für Effekte (kleine Länder: der Punkt im Land, nicht die Beschriftung außerhalb)
 function anchorOf(id) { const L = LABELS[id]; return L.from || L.at; }
 
-// Kartengröße und Schriftmaß. Auf dem Handy wird die Karte so groß, als wäre der Hinweis drei Zeilen lang:
-// kürzere Hinweise lassen etwas mehr Luft um die Karte, die Karte selbst bleibt immer gleich groß.
+// Kartengröße und Schriftmaß. Handy (Spielansicht): Die Karte hat eine feste Höhe für die ganze Runde, berechnet für den Platzbedarf
+// bei Hinweis 5 (vier einzeilige frühere Hinweise + die höchste Hinweiskarte dieser Runde + Punkteleiter). Sie sitzt unten über der
+// Aktionsleiste; darüber wachsen die Hinweise, ohne die Karte zu verkleinern. Desktop: unverändert (Karte füllt die rechte Spalte).
 const DESKTOP = matchMedia('(min-width: 880px) and (min-height: 540px)');
+const MOBILE_MAP = { MIN: 180, MARGIN: 4 }; // Mindesthöhe der Karte, Sicherheitsabstand (px)
 function sizeMap() {
   if (!ui || !ui.map) return;
-  const svg = ui.map.svg, wrap = ui.mapwrap, p = ui.cardSlot && ui.cardSlot.querySelector('.card p');
+  const svg = ui.map.svg, wrap = ui.mapwrap, game = !!ui.cardSlot, mobile = game && !DESKTOP.matches;
   svg.style.top = svg.style.height = '';
-  if (!DESKTOP.matches && p) {
-    const spare = Math.max(0, 3 * parseFloat(getComputedStyle(p).lineHeight) - p.offsetHeight);
-    const h = Math.max(wrap.clientHeight - spare, 120);
-    svg.style.height = h + 'px'; svg.style.top = (wrap.clientHeight - h) / 2 + 'px';
-  }
-  const ctm = svg.getScreenCTM(); if (ctm && ctm.a) svg.style.setProperty('--u', (1 / ctm.a).toFixed(3));
+  wrap.classList.toggle('zoomable', mobile);
+  wrap.style.height = mobile ? mobileMapHeight() + 'px' : '';
+  if (!mobile && ui.map.zoom) ui.map.zoom.reset(false); // Desktop: nie gezoomt
+  const k = ui.map.zoom ? ui.map.zoom.k() : 1, ctm = svg.getScreenCTM();
+  if (ctm && ctm.a) ui.map.baseU = k / ctm.a; // Karteneinheiten je Bildschirmpixel bei 1× (die viewBox enthält den Zoom)
+  if (ui.map.baseU) svg.style.setProperty('--u', (ui.map.baseU / k).toFixed(3));
+  touchHits(ui.map, mobile, k);
   layoutLabels(ui.map);
+  if (mobile && ui.map.zoom) ui.map.zoom.maybeTip();
+}
+// Höhe der Handy-Karte: Platz zwischen Beginn von #main und Aktionsleiste minus Bedarf bei Hinweis 5
+function mobileMapHeight() {
+  const g = ui, main = $('#main'), cs = getComputedStyle(main), gap = parseFloat(cs.rowGap) || 10;
+  const bottom = $('.bar').getBoundingClientRect().top - (parseFloat(getComputedStyle($('.app')).rowGap) || 12);
+  const ecs = getComputedStyle(g.earlier), rowH = parseFloat(ecs.lineHeight) || 20, egap = parseFloat(ecs.rowGap) || 4;
+  const earlierH = 4 * rowH + 3 * egap;
+  const free = bottom - main.getBoundingClientRect().top - earlierH - maxCardHeight() - g.stake.offsetHeight - 3 * gap - MOBILE_MAP.MARGIN;
+  return Math.max(MOBILE_MAP.MIN, Math.floor(free));
+}
+// Höchste Hinweiskarte der aktuellen Runde (alle fünf Hinweise unsichtbar gemessen, je Runde und Breite zwischengespeichert)
+function maxCardHeight() {
+  const g = ui, q = cur(), w = g.cardSlot.clientWidth, key = state.round + '|' + w;
+  if (g.cardMax && g.cardMax.key === key) return g.cardMax.h;
+  const m = el('div', 'card measure', g.cardSlot.parentNode); m.style.width = w + 'px';
+  m.innerHTML = '<div class="head"><span>Kategorie</span><span>Hinweis 5 von 5</span></div><p></p>';
+  let h = 0; for (const [, txt] of q.h) { m.querySelector('p').textContent = txt; h = Math.max(h, m.offsetHeight); }
+  m.remove(); g.cardMax = { key, h }; return h;
+}
+// Tippflächen der kleinen Länder (Berlin, Bremen, Hamburg, Saarland): auf dem Handy mindestens 44×44 px auf dem Bildschirm
+// (Radius 22 px, bei Zoom gegengerechnet), nie kleiner als die Desktop-Radien. Desktop: wie bisher, Saarland ohne Tippfläche.
+const TOUCH_HIT_PX = 22;
+function touchHits(m, mobile, k = 1) {
+  const u = (m.baseU || 1) / k;
+  for (const id in m.hit) m.hit[id].setAttribute('r', mobile ? Math.max(SMALL[id] || 0, TOUCH_HIT_PX * u).toFixed(1) : (SMALL[id] || 0));
+}
+
+/* ---------- Zoom in der Handy-Karte ---------- */
+// Nur in der Spielansicht auf dem Handy (.mapwrap.zoomable, sizeMap). Gezoomt wird über die viewBox des SVG: Konturen bleiben
+// (non-scaling-stroke) scharf, der Bereich schneidet von selbst ab, die Karte kann nicht herausgeschoben werden (Begrenzung an den
+// Rändern). Pointer Events, touch-action: none nur auf der Karte (Seitenzoom des Browsers bleibt erlaubt).
+// Zwei Finger: Zoom 1×–4× um den Punkt zwischen den Fingern. Ein Finger (gezoomt): verschieben. Doppeltippen: 2,5× auf die Stelle bzw.
+// zurück auf 1×. Tippen wählt ein Land nur, wenn sich der Finger < 8 px bewegt hat und kein zweiter Finger beteiligt war; der zweite
+// Tipp eines Doppeltippens macht die Auswahl des ersten rückgängig. "Ganze Karte" (nur gezoomt) setzt zurück.
+// Beschriftungen: --u wird mitgerechnet, die Schrift wächst nur bis zur Desktop-Größe (17 px), Tippflächen bleiben 44 px groß.
+const ZOOM = { MAX: 4, DOUBLE: 2.5, TAP_PX: 8, DOUBLE_MS: 300, DOUBLE_PX: 30, ANIM_MS: 250, TIP_MS: 4000, TIP_KEY: 'sechzehn-zoomtipp' };
+function mapZoom(m, wrap) {
+  const svg = m.svg, B = VIEW(MAP).split(' ').map(Number); // Grund-viewBox [x, y, w, h]
+  let k = 1, vx = B[0], vy = B[1], raf = 0, animDone = null, tip = null, tipShown = false, labelsRaf = 0;
+  const pts = new Map(); let g = null, last = null, swallowUntil = 0;
+  const btn = el('button', 'mapreset', wrap); btn.type = 'button'; btn.textContent = 'Ganze Karte'; btn.hidden = true;
+  btn.onclick = () => reset(true);
+  const active = () => wrap.classList.contains('zoomable');
+  const box = () => { // Bildschirmrechteck der Karte bei 1× (viewBox mit preserveAspectRatio meet: zentriert)
+    const r = svg.getBoundingClientRect(), s0 = Math.min(r.width / B[2], r.height / B[3]);
+    return { s0, l: r.left + (r.width - B[2] * s0) / 2, t: r.top + (r.height - B[3] * s0) / 2 };
+  };
+  const toMap = (sx, sy, R) => [vx + (sx - R.l) / (R.s0 * k), vy + (sy - R.t) / (R.s0 * k)];
+  const apply = () => {
+    k = Math.min(Math.max(k, 1), ZOOM.MAX);
+    const w = B[2] / k, h = B[3] / k;
+    vx = Math.min(Math.max(vx, B[0]), B[0] + B[2] - w); vy = Math.min(Math.max(vy, B[1]), B[1] + B[3] - h);
+    svg.setAttribute('viewBox', k === 1 ? VIEW(MAP) : `${vx.toFixed(2)} ${vy.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)}`);
+    if (m.baseU) svg.style.setProperty('--u', (m.baseU / k).toFixed(3));
+    touchHits(m, active(), k);
+    const zoomed = k > 1.02; btn.hidden = !zoomed; wrap.classList.toggle('zoomed', zoomed);
+    if (zoomed) hideTip(true);
+    if (!labelsRaf) labelsRaf = requestAnimationFrame(() => { labelsRaf = 0; layoutLabels(m); });
+  };
+  const setAt = (nk, mx, my, sx, sy, R) => { k = Math.min(Math.max(nk, 1), ZOOM.MAX); vx = mx - (sx - R.l) / (R.s0 * k); vy = my - (sy - R.t) / (R.s0 * k); apply(); };
+  let animId = 0;
+  const stop = () => { animId++; cancelAnimationFrame(raf); raf = 0; if (animDone) { const d = animDone; animDone = null; d(); } }; // bricht ab (z. B. neuer Finger), Zoom bleibt, wo er ist
+  // Weicher Übergang (250 ms) zu Zoom nk mit linker oberer Ecke (tx, ty); bei "Bewegung reduzieren" sofort
+  const animateTo = (nk, tx, ty) => {
+    stop();
+    const k0 = k, x0 = vx, y0 = vy;
+    if (reducedMotion() || (Math.abs(nk - k0) < 1e-3 && Math.abs(tx - x0) < 0.5 && Math.abs(ty - y0) < 0.5)) { k = nk; vx = tx; vy = ty; apply(); return Promise.resolve(); }
+    return new Promise(res => {
+      animDone = res; const id = ++animId, t0 = performance.now(), ease = t => 1 - Math.pow(1 - t, 3);
+      const finish = () => { if (id !== animId) return; animId++; cancelAnimationFrame(raf); raf = 0; clearTimeout(guard); k = nk; vx = tx; vy = ty; apply(); const d = animDone; animDone = null; if (d) d(); };
+      const step = now => {
+        if (id !== animId) return;
+        const t = Math.min(1, (now - t0) / ZOOM.ANIM_MS), e = ease(t);
+        if (t >= 1) return finish();
+        k = k0 + (nk - k0) * e; vx = x0 + (tx - x0) * e; vy = y0 + (ty - y0) * e; apply();
+        raf = requestAnimationFrame(step);
+      };
+      // Sicherung: Läuft requestAnimationFrame nicht (Tab im Hintergrund), landet der Zoom trotzdem am Ziel
+      const guard = setTimeout(finish, ZOOM.ANIM_MS + 100);
+      raf = requestAnimationFrame(step);
+    });
+  };
+  function reset(animated) {
+    if (k === 1 && !raf) return Promise.resolve();
+    if (!animated) { stop(); k = 1; vx = B[0]; vy = B[1]; apply(); return Promise.resolve(); }
+    return animateTo(1, B[0], B[1]);
+  }
+  const doubleTap = (sx, sy) => {
+    if (k > 1.02) return reset(true);
+    const R = box(), [mx, my] = toMap(sx, sy, R), nk = ZOOM.DOUBLE;
+    const w = B[2] / nk, h = B[3] / nk;
+    const tx = Math.min(Math.max(mx - (sx - R.l) / (R.s0 * nk), B[0]), B[0] + B[2] - w), ty = Math.min(Math.max(my - (sy - R.t) / (R.s0 * nk), B[1]), B[1] + B[3] - h);
+    return animateTo(nk, tx, ty);
+  };
+  const startPinch = () => {
+    const [a, b] = [...pts.values()], R = box(), mid = [(a.x + b.x) / 2, (a.y + b.y) / 2];
+    g.pinch = { d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, k0: k, m0: toMap(mid[0], mid[1], R) };
+  };
+  const startPan = p => { g.pan = { sx: p.x, sy: p.y, vx0: vx, vy0: vy }; };
+  const onMove = e => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size >= 2 && g.pinch) {
+      const [a, b] = [...pts.values()], R = box(), d = Math.hypot(a.x - b.x, a.y - b.y);
+      setAt(g.pinch.k0 * d / g.pinch.d0, g.pinch.m0[0], g.pinch.m0[1], (a.x + b.x) / 2, (a.y + b.y) / 2, R);
+      return;
+    }
+    const p = pts.get(e.pointerId);
+    if (Math.hypot(p.x - g.x0, p.y - g.y0) > ZOOM.TAP_PX) g.moved = true;
+    if (g.moved && k > 1 && g.pan) { const R = box(); vx = g.pan.vx0 - (p.x - g.pan.sx) / (R.s0 * k); vy = g.pan.vy0 - (p.y - g.pan.sy) / (R.s0 * k); apply(); }
+  };
+  const onUp = e => {
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    if (pts.size === 1) { g.pinch = null; startPan([...pts.values()][0]); return; } // nach dem Pinch mit einem Finger weiter verschieben
+    if (pts.size > 0) return;
+    removeEventListener('pointermove', onMove); removeEventListener('pointerup', onUp); removeEventListener('pointercancel', onUp);
+    const now = performance.now();
+    if (g.moved || g.multi || e.type === 'pointercancel') { swallowUntil = now + 500; last = null; return; } // kein Tippen: keine Auswahl
+    if (last && now - last.t < ZOOM.DOUBLE_MS && Math.hypot(e.clientX - last.x, e.clientY - last.y) < ZOOM.DOUBLE_PX) {
+      swallowUntil = now + 500; const prev = last.sel; last = null;
+      if (!state.done && state.sel !== prev) { state.sel = prev; render(); } // Auswahl des ersten Tipps zurücknehmen
+      doubleTap(e.clientX, e.clientY); return;
+    }
+    last = { t: now, x: e.clientX, y: e.clientY, sel: g.sel };
+  };
+  svg.addEventListener('pointerdown', e => {
+    if (!active() || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    stop();
+    if (pts.size === 0) {
+      g = { x0: e.clientX, y0: e.clientY, moved: false, multi: false, sel: state.sel, pinch: null, pan: null };
+      addEventListener('pointermove', onMove); addEventListener('pointerup', onUp); addEventListener('pointercancel', onUp);
+    }
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) startPan(pts.get(e.pointerId));
+    else { g.multi = true; startPinch(); }
+  });
+  // Einmaliger Hinweis beim allerersten Spiel auf einem Touch-Gerät
+  function maybeTip() {
+    if (tipShown || !active() || !matchMedia('(pointer: coarse)').matches) return;
+    tipShown = true;
+    try { if (localStorage.getItem(ZOOM.TIP_KEY)) return; localStorage.setItem(ZOOM.TIP_KEY, '1'); } catch (e) { return; }
+    tip = el('div', 'zoomtip', wrap); tip.textContent = 'Mit zwei Fingern vergrößern'; tip.setAttribute('role', 'status');
+    setTimeout(() => hideTip(false), ZOOM.TIP_MS);
+  }
+  function hideTip() { if (!tip) return; const t = tip; tip = null; t.classList.add('out'); setTimeout(() => t.remove(), 300); }
+  return {
+    k: () => k, reset, maybeTip,
+    busy: () => (raf && animDone ? new Promise(r => { const d = animDone; animDone = () => { d(); r(); }; }) : null),
+    swallow(e) { if (performance.now() < swallowUntil) { swallowUntil = 0; e.preventDefault(); return true; } return false; },
+  };
 }
 
 function updateMap() {
@@ -302,6 +459,7 @@ function pick(id) {
 function guess() {
   if (!state.sel || state.done) return;
   const q = cur();
+  if (ui && ui.map && ui.map.zoom) ui.map.zoom.reset(true); // Handy: Karte sanft auf 1× (nächster Hinweis bzw. Lösung bei 1×)
   // Ton: kein eigener Klang für den Tipp, direkt das Ergebnis. Neue Hinweiskarte 250 ms nach "falsch", damit sich nichts überlagert.
   if (state.sel === q.a) {
     Sound.play(state.hint === 0 ? 'jackpot' : 'right');
@@ -319,6 +477,7 @@ function next() {
   fx = null;
   document.querySelectorAll('canvas.confetti').forEach(c => c.remove()); // Volltreffer-Reste nicht in die nächste Runde mitnehmen
   if (ui && ui.map) ui.map.svg.classList.remove('jackpot');
+  if (ui && ui.map && ui.map.zoom) ui.map.zoom.reset(false); // neue Runde immer bei 1×
   if (state.round < CONFIG.ROUNDS - 1) Object.assign(state, { round: state.round + 1, hint: 0, wrong: [], sel: null, done: false });
   else { state.round = CONFIG.ROUNDS; fx = { reveal: true }; } // Auswertung direkt nach dem Spiel: Raster aufdecken
   save(); render(); window.scrollTo({ top: 0 });
@@ -336,7 +495,7 @@ function reducedMotion() { return matchMedia('(prefers-reduced-motion: reduce)')
 // Füllt Platz i der Hinweisliste (Farbquadrat der Kategorie + Text) oder leert ihn (h = null → ausgeblendet).
 function fillSlot(i, h) {
   const row = ui.slots[i];
-  row.classList.toggle('empty', !h);
+  row.classList.toggle('empty', !h); row.classList.remove('open');
   row.querySelector('i').style.background = h ? catVar(h[0]) : '';
   row.querySelector('span').textContent = h ? h[1] : '';
   return row;
@@ -432,7 +591,12 @@ function buildGame() {
   const g = { key: '' };
   // Frühere Hinweise: vier Plätze über der aktuellen Hinweiskarte, leere sind ausgeblendet. Texte stehen vollständig da (mit Umbruch).
   g.earlier = el('ol', 'earlier', main); g.earlier.setAttribute('aria-label', 'Frühere Hinweise');
-  g.slots = [0, 1, 2, 3].map(() => { const row = el('li', 'hint empty', g.earlier); el('i', '', row); el('span', '', row); return row; });
+  // Handy: einzeilig mit "…" (CSS); Antippen klappt eine Zeile aus bzw. wieder ein
+  g.slots = [0, 1, 2, 3].map(() => {
+    const row = el('li', 'hint empty', g.earlier); el('i', '', row); el('span', '', row);
+    row.onclick = () => { if (!DESKTOP.matches) row.classList.toggle('open'); };
+    return row;
+  });
   g.cardSlot = el('div', 'cardslot', main);
   // Über der Punkteleiter steht im Spiel der Einsatz; nach der Runde legt sich das Ergebnis darüber.
   const stake = el('div', 'stake', main); g.stake = stake; g.cap = el('div', 'cap', stake);
@@ -441,7 +605,7 @@ function buildGame() {
   g.rungs = CONFIG.POINTS.map(p => { const r = el('span', 'rung', g.ladder); r.textContent = p; return r; });
   g.verdict = el('div', 'verdict', stake); g.verdict.setAttribute('role', 'status');
   g.mapwrap = el('div', 'mapwrap', main);
-  g.map = buildMap(); g.mapwrap.appendChild(g.map.svg);
+  g.map = buildMap(); g.mapwrap.appendChild(g.map.svg); g.map.zoom = mapZoom(g.map, g.mapwrap);
   g.btn = el('button', 'btn', bar); g.btn.type = 'button';
   g.btn.onclick = () => (state.done ? next() : guess());
   return g;
@@ -490,7 +654,9 @@ function updateGame() {
   if (fx) {
     if (fx.flash) replay(g.map.path[fx.flash], 'flash');
     if (fx.shake) replay(g.btn, 'shake');
-    if (fx.win) { const full = res.hint === 0; pointsBadge(q.a, fx.win, full); if (full) jackpot(q.a); }
+    // Punkte-Abzeichen und Konfetti erst, wenn die Karte wieder bei 1× ist (Position hängt vom Zoom ab)
+    if (fx.win) { const full = res.hint === 0, win = fx.win, show = () => { pointsBadge(q.a, win, full); if (full) jackpot(q.a); };
+      const busy = g.map.zoom && g.map.zoom.busy(); busy ? busy.then(show) : show(); }
     fx = null;
   }
 }

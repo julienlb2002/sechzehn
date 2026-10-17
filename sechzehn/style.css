@@ -131,6 +131,36 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px} /* Kategor
 .stake.done .cap,.stake.done .ladder{visibility:hidden}
 .stake .cap{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 
+/* Unsichtbare Messkarte für maxCardHeight() (höchste Hinweiskarte der Runde) */
+.card.measure{position:absolute;left:-9999px;top:0;visibility:hidden;animation:none;pointer-events:none}
+
+/* Handy (alles außer dem Desktop-Raster, Grenzwerte = DESKTOP in app.js), Spielansicht:
+   - Frühere Hinweise einzeilig mit "…", Antippen klappt eine Zeile aus (.open).
+   - Karte mit fester Höhe für die ganze Runde (sizeMap → mobileMapHeight), unten über der Aktionsleiste; overflow: hidden.
+   - Zoom über die viewBox (mapZoom in app.js); touch-action: none nur auf der Karte, damit der Browser dort nicht die Seite zoomt. */
+@media not all and (min-width:880px) and (min-height:540px){
+  .earlier{gap:4px}
+  .earlier .hint{cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .earlier .hint span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .earlier .hint.open span{white-space:normal}
+  /* Platz für die Karte: Einsatz-Text weg (die markierte Stufe zeigt ihn), Hinweis etwas kleiner; Punkteleiter und Karte unten,
+     die freie Fläche bei frühen Hinweisen liegt zwischen Hinweiskarte und Punkteleiter */
+  body.playing .stake .cap{display:none}
+  body.playing .card p{font-size:1.1rem}
+  body.playing #main > .stake{margin-top:auto}
+  body.playing .mapwrap.zoomable{margin-top:0}
+}
+.mapwrap.zoomable{flex:0 0 auto;margin-top:auto;min-height:0;overflow:hidden}
+.mapwrap.zoomable svg{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+/* "Ganze Karte": klein und dezent in der Ecke, nur im gezoomten Zustand */
+.mapreset{position:absolute;top:6px;right:6px;z-index:4;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);
+  color:var(--ink);font-size:.78rem;font-weight:700;box-shadow:0 2px 8px -4px rgba(0,0,0,.35)}
+/* Einmaliger Hinweis beim ersten Spiel auf einem Touch-Gerät */
+.zoomtip{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:4;padding:6px 12px;border-radius:999px;background:var(--ink);color:var(--bg);
+  font-size:.8rem;font-weight:600;white-space:nowrap;pointer-events:none;animation:tipIn .3s ease both;transition:opacity .3s}
+.zoomtip.out{opacity:0}
+@keyframes tipIn{from{opacity:0;transform:translate(-50%,-4px)}}
+
 /* Karte */
 .mapwrap{position:relative;flex:1 1 0;min-height:180px}
 .mapwrap svg{position:absolute;inset:0;width:100%;height:100%;max-width:380px;margin:0 auto;display:block;touch-action:manipulation}
