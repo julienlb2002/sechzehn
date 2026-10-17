@@ -257,42 +257,43 @@ function layoutLabels(m) {
 // Mittelpunkt eines Landes für Effekte (kleine Länder: der Punkt im Land, nicht die Beschriftung außerhalb)
 function anchorOf(id) { const L = LABELS[id]; return L.from || L.at; }
 
-// Kartengröße und Schriftmaß. Handy (Spielansicht): Die Karte hat eine feste Höhe für die ganze Runde, berechnet für den Platzbedarf
-// bei Hinweis 5 (vier einzeilige frühere Hinweise + die höchste Hinweiskarte dieser Runde + Punkteleiter). Sie sitzt unten über der
-// Aktionsleiste; darüber wachsen die Hinweise, ohne die Karte zu verkleinern. Desktop: unverändert (Karte füllt die rechte Spalte).
+// Kartengröße und Schriftmaß. Handy (Spielansicht): Der Kartenbereich reicht von der Rundenleiste bis zur Aktionsleiste; darüber liegt
+// der Hinweisblock. Die Karte ist unten verankert und so hoch, dass sie bei Hinweis 1 ganz unter den Block passt (einmal je Runde
+// berechnet, danach fest). Wächst der Block, überdeckt er den Norden; die Karte lässt sich dann senkrecht verschieben (mapZoom).
+// Desktop: unverändert (Karte füllt die rechte Spalte).
 const DESKTOP = matchMedia('(min-width: 880px) and (min-height: 540px)');
-const MOBILE_MAP = { MIN: 180, MARGIN: 4 }; // Mindesthöhe der Karte, Sicherheitsabstand (px)
+const MOBILE_MAP = { MIN: 160, FADE: 16 }; // Mindesthöhe der Karte, Höhe des Verlaufs unter dem Block (px)
 function sizeMap() {
   if (!ui || !ui.map) return;
   const svg = ui.map.svg, wrap = ui.mapwrap, game = !!ui.cardSlot, mobile = game && !DESKTOP.matches;
-  svg.style.top = svg.style.height = '';
   wrap.classList.toggle('zoomable', mobile);
-  wrap.style.height = mobile ? mobileMapHeight() + 'px' : '';
+  if (mobile) { const h = mobileMapHeight(); svg.style.top = 'auto'; svg.style.height = h + 'px'; }
+  else svg.style.top = svg.style.height = '';
   if (!mobile && ui.map.zoom) ui.map.zoom.reset(false); // Desktop: nie gezoomt
   const k = ui.map.zoom ? ui.map.zoom.k() : 1, ctm = svg.getScreenCTM();
   if (ctm && ctm.a) ui.map.baseU = k / ctm.a; // Karteneinheiten je Bildschirmpixel bei 1× (die viewBox enthält den Zoom)
   if (ui.map.baseU) svg.style.setProperty('--u', (ui.map.baseU / k).toFixed(3));
   touchHits(ui.map, mobile, k);
   layoutLabels(ui.map);
-  if (mobile && ui.map.zoom) ui.map.zoom.maybeTip();
+  if (mobile && ui.map.zoom) { ui.map.zoom.fitLabels(); ui.map.zoom.maybeTip(); }
+  else if (ui.map.zoom) ui.map.zoom.fitLabels(); // Desktop: setzt evtl. verschobene Beschriftungen zurück
 }
-// Höhe der Handy-Karte: Platz zwischen Beginn von #main und Aktionsleiste minus Bedarf bei Hinweis 5
+// Höhe der Handy-Karte: Kartenbereich minus Hinweisblock bei Hinweis 1 (Karte des ersten Hinweises + Punkteleiter) minus Verlauf.
+// Je Runde und Fenstergröße einmal berechnet; spätere Hinweise ändern sie nicht.
 function mobileMapHeight() {
-  const g = ui, main = $('#main'), cs = getComputedStyle(main), gap = parseFloat(cs.rowGap) || 10;
-  const bottom = $('.bar').getBoundingClientRect().top - (parseFloat(getComputedStyle($('.app')).rowGap) || 12);
-  const ecs = getComputedStyle(g.earlier), rowH = parseFloat(ecs.lineHeight) || 20, egap = parseFloat(ecs.rowGap) || 4;
-  const earlierH = 4 * rowH + 3 * egap;
-  const free = bottom - main.getBoundingClientRect().top - earlierH - maxCardHeight() - g.stake.offsetHeight - 3 * gap - MOBILE_MAP.MARGIN;
-  return Math.max(MOBILE_MAP.MIN, Math.floor(free));
+  const g = ui, key = state.round + '|' + innerWidth + '|' + innerHeight;
+  if (g.mapH && g.mapH.key === key) return g.mapH.h;
+  const area = g.mapwrap.clientHeight, gap = parseFloat(getComputedStyle(g.block).rowGap) || 10;
+  const block1 = cardHeight(0) + gap + g.stake.offsetHeight;
+  const h = Math.max(MOBILE_MAP.MIN, Math.floor(area - block1 - MOBILE_MAP.FADE));
+  g.mapH = { key, h }; return h;
 }
-// Höchste Hinweiskarte der aktuellen Runde (alle fünf Hinweise unsichtbar gemessen, je Runde und Breite zwischengespeichert)
-function maxCardHeight() {
-  const g = ui, q = cur(), w = g.cardSlot.clientWidth, key = state.round + '|' + w;
-  if (g.cardMax && g.cardMax.key === key) return g.cardMax.h;
-  const m = el('div', 'card measure', g.cardSlot.parentNode); m.style.width = w + 'px';
-  m.innerHTML = '<div class="head"><span>Kategorie</span><span>Hinweis 5 von 5</span></div><p></p>';
-  let h = 0; for (const [, txt] of q.h) { m.querySelector('p').textContent = txt; h = Math.max(h, m.offsetHeight); }
-  m.remove(); g.cardMax = { key, h }; return h;
+// Höhe der Hinweiskarte für Hinweis i der aktuellen Runde (unsichtbar gemessen)
+function cardHeight(i) {
+  const g = ui, m = el('div', 'card measure', g.block); m.style.width = g.cardSlot.clientWidth + 'px';
+  m.innerHTML = '<div class="head"><span>Kategorie</span><span>Hinweis 1 von 5</span></div><p></p>';
+  m.querySelector('p').textContent = cur().h[i][1];
+  const h = m.offsetHeight; m.remove(); return h;
 }
 // Tippflächen der kleinen Länder (Berlin, Bremen, Hamburg, Saarland): auf dem Handy mindestens 44×44 px auf dem Bildschirm
 // (Radius 22 px, bei Zoom gegengerechnet), nie kleiner als die Desktop-Radien. Desktop: wie bisher, Saarland ohne Tippfläche.
@@ -318,22 +319,42 @@ function mapZoom(m, wrap) {
   const btn = el('button', 'mapreset', wrap); btn.type = 'button'; btn.textContent = 'Ganze Karte'; btn.hidden = true;
   btn.onclick = () => reset(true);
   const active = () => wrap.classList.contains('zoomable');
+  const block = () => wrap.parentNode.querySelector('.hintblock');
   const box = () => { // Bildschirmrechteck der Karte bei 1× (viewBox mit preserveAspectRatio meet: zentriert)
     const r = svg.getBoundingClientRect(), s0 = Math.min(r.width / B[2], r.height / B[3]);
     return { s0, l: r.left + (r.width - B[2] * s0) / 2, t: r.top + (r.height - B[3] * s0) / 2 };
   };
+  // Vom Hinweisblock überdeckter Teil der Karte (Bildschirm-px ab Oberkante der Karte); 0 auf dem Desktop
+  const coverPx = R => { const b = active() && block(); return b ? Math.max(0, b.getBoundingClientRect().bottom - R.t) : 0; };
   const toMap = (sx, sy, R) => [vx + (sx - R.l) / (R.s0 * k), vy + (sy - R.t) / (R.s0 * k)];
+  // Grenzen: waagerecht wie bisher; senkrecht darf der Norden bis unter den Block gezogen werden (vy < B[1] zeigt oben leeren Rand)
+  const clampV = (R = box()) => {
+    const w = B[2] / k, h = B[3] / k, lo = B[1] - coverPx(R) / (R.s0 * k);
+    vx = Math.min(Math.max(vx, B[0]), B[0] + B[2] - w); vy = Math.min(Math.max(vy, lo), B[1] + B[3] - h);
+  };
   const apply = () => {
     k = Math.min(Math.max(k, 1), ZOOM.MAX);
-    const w = B[2] / k, h = B[3] / k;
-    vx = Math.min(Math.max(vx, B[0]), B[0] + B[2] - w); vy = Math.min(Math.max(vy, B[1]), B[1] + B[3] - h);
-    svg.setAttribute('viewBox', k === 1 ? VIEW(MAP) : `${vx.toFixed(2)} ${vy.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)}`);
+    const R = box(); clampV(R);
+    const w = B[2] / k, h = B[3] / k, home = k === 1 && Math.abs(vy - B[1]) < 0.01;
+    svg.setAttribute('viewBox', home ? VIEW(MAP) : `${vx.toFixed(2)} ${vy.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)}`);
     if (m.baseU) svg.style.setProperty('--u', (m.baseU / k).toFixed(3));
     touchHits(m, active(), k);
-    const zoomed = k > 1.02; btn.hidden = !zoomed; wrap.classList.toggle('zoomed', zoomed);
+    const zoomed = k > 1.02; btn.hidden = home || (!zoomed && vy > B[1] - 0.5); wrap.classList.toggle('zoomed', zoomed);
     if (zoomed) hideTip(true);
-    if (!labelsRaf) labelsRaf = requestAnimationFrame(() => { labelsRaf = 0; layoutLabels(m); });
+    if (!labelsRaf) labelsRaf = requestAnimationFrame(() => { labelsRaf = 0; layoutLabels(m); fitLabels(); });
   };
+  // Beschriftungen falsch getippter Länder, die teilweise unter dem Block liegen, in den sichtbaren Teil des Landes schieben;
+  // liegt ein Land ganz darunter, bleibt seine Beschriftung, wo sie ist (unter dem Block; sichtbar nach Verschieben der Karte).
+  function fitLabels() {
+    const R = box(), cov = coverPx(R), yCut = vy + cov / (R.s0 * k) + 6 / (R.s0 * k);
+    for (const id of ORDER) {
+      const g = m.lab[id]; g.removeAttribute('transform');
+      if (!cov || !g.classList.contains('show') || g.classList.contains('answer') || LABELS[id].from) continue;
+      const bb = m.path[id].getBBox(), y0 = LABELS[id].at[1], bottom = bb.y + bb.height;
+      if (y0 >= yCut + 12 / (R.s0 * k) || bottom <= yCut) continue;
+      const ny = (Math.max(bb.y, yCut) + bottom) / 2; g.setAttribute('transform', `translate(0 ${(ny - y0).toFixed(1)})`);
+    }
+  }
   const setAt = (nk, mx, my, sx, sy, R) => { k = Math.min(Math.max(nk, 1), ZOOM.MAX); vx = mx - (sx - R.l) / (R.s0 * k); vy = my - (sy - R.t) / (R.s0 * k); apply(); };
   let animId = 0;
   const stop = () => { animId++; cancelAnimationFrame(raf); raf = 0; if (animDone) { const d = animDone; animDone = null; d(); } }; // bricht ab (z. B. neuer Finger), Zoom bleibt, wo er ist
@@ -358,9 +379,17 @@ function mapZoom(m, wrap) {
     });
   };
   function reset(animated) {
-    if (k === 1 && !raf) return Promise.resolve();
+    if (k === 1 && Math.abs(vy - B[1]) < 0.01 && !raf) return Promise.resolve();
     if (!animated) { stop(); k = 1; vx = B[0]; vy = B[1]; apply(); return Promise.resolve(); }
     return animateTo(1, B[0], B[1]);
+  }
+  // Rundenende: zurück auf 1× und die Karte nur so weit nach unten schieben, dass das Land (bzw. bei kleinen Ländern der Punkt im
+  // Land) ganz unter dem Block liegt; sonst Ausgangszustand (unten verankert)
+  function showLand(id) {
+    if (!active()) return reset(true);
+    const R = box(), cov = coverPx(R) / R.s0, bb = m.path[id].getBBox(), margin = 14 / R.s0;
+    const ty = Math.max(B[1] - cov, Math.min(B[1], bb.y - cov - margin));
+    return animateTo(1, B[0], ty);
   }
   const doubleTap = (sx, sy) => {
     if (k > 1.02) return reset(true);
@@ -384,7 +413,8 @@ function mapZoom(m, wrap) {
     }
     const p = pts.get(e.pointerId);
     if (Math.hypot(p.x - g.x0, p.y - g.y0) > ZOOM.TAP_PX) g.moved = true;
-    if (g.moved && k > 1 && g.pan) { const R = box(); vx = g.pan.vx0 - (p.x - g.pan.sx) / (R.s0 * k); vy = g.pan.vy0 - (p.y - g.pan.sy) / (R.s0 * k); apply(); }
+    if (g.moved && g.pan) { const R = box(); if (k <= 1 && !coverPx(R)) return; // bei 1× nur verschiebbar, wenn der Block die Karte überdeckt
+      vx = g.pan.vx0 - (p.x - g.pan.sx) / (R.s0 * k); vy = g.pan.vy0 - (p.y - g.pan.sy) / (R.s0 * k); apply(); }
   };
   const onUp = e => {
     if (!pts.has(e.pointerId)) return;
@@ -405,6 +435,7 @@ function mapZoom(m, wrap) {
     if (!active() || (e.pointerType === 'mouse' && e.button !== 0)) return;
     stop();
     if (pts.size === 0) {
+      swallowUntil = 0; // der Klick einer früheren Geste ist längst durch; eine neue Berührung darf wieder auswählen
       g = { x0: e.clientX, y0: e.clientY, moved: false, multi: false, sel: state.sel, pinch: null, pan: null };
       addEventListener('pointermove', onMove); addEventListener('pointerup', onUp); addEventListener('pointercancel', onUp);
     }
@@ -422,7 +453,7 @@ function mapZoom(m, wrap) {
   }
   function hideTip() { if (!tip) return; const t = tip; tip = null; t.classList.add('out'); setTimeout(() => t.remove(), 300); }
   return {
-    k: () => k, reset, maybeTip,
+    k: () => k, reset, maybeTip, showLand, fitLabels,
     busy: () => (raf && animDone ? new Promise(r => { const d = animDone; animDone = () => { d(); r(); }; }) : null),
     swallow(e) { if (performance.now() < swallowUntil) { swallowUntil = 0; e.preventDefault(); return true; } return false; },
   };
@@ -459,7 +490,8 @@ function pick(id) {
 function guess() {
   if (!state.sel || state.done) return;
   const q = cur();
-  if (ui && ui.map && ui.map.zoom) ui.map.zoom.reset(true); // Handy: Karte sanft auf 1× (nächster Hinweis bzw. Lösung bei 1×)
+  // Handy: Karte sanft auf 1× (Ausgangszustand); am Rundenende so, dass das Lösungsland sichtbar ist (siehe unten)
+  const zoom = ui && ui.map && ui.map.zoom;
   // Ton: kein eigener Klang für den Tipp, direkt das Ergebnis. Neue Hinweiskarte 250 ms nach "falsch", damit sich nichts überlagert.
   if (state.sel === q.a) {
     Sound.play(state.hint === 0 ? 'jackpot' : 'right');
@@ -470,7 +502,9 @@ function guess() {
     if (state.hint >= 4) { state.results[state.round] = { pts: 0, hint: 5 }; state.done = true; }
     else { state.hint++; setTimeout(() => Sound.play('hint'), 250); }
   }
-  state.sel = null; save(); render();
+  state.sel = null; save();
+  if (zoom) state.done ? zoom.showLand(q.a) : zoom.reset(true);
+  render();
 }
 
 function next() {
@@ -589,17 +623,20 @@ function confetti(id) {
 function buildGame() {
   const main = $('#main'), bar = $('#bar'); main.innerHTML = ''; bar.innerHTML = '';
   const g = { key: '' };
+  // Hinweisblock: frühere Hinweise, aktuelle Hinweiskarte, Punkteleiter. Desktop: display: contents (die Teile liegen einzeln im Raster).
+  // Handy: ein zusammenhängender Block mit deckendem Hintergrund, der über der Karte liegt und mit jedem Hinweis nach unten wächst.
+  g.block = el('div', 'hintblock', main);
   // Frühere Hinweise: vier Plätze über der aktuellen Hinweiskarte, leere sind ausgeblendet. Texte stehen vollständig da (mit Umbruch).
-  g.earlier = el('ol', 'earlier', main); g.earlier.setAttribute('aria-label', 'Frühere Hinweise');
+  g.earlier = el('ol', 'earlier', g.block); g.earlier.setAttribute('aria-label', 'Frühere Hinweise');
   // Handy: einzeilig mit "…" (CSS); Antippen klappt eine Zeile aus bzw. wieder ein
   g.slots = [0, 1, 2, 3].map(() => {
     const row = el('li', 'hint empty', g.earlier); el('i', '', row); el('span', '', row);
     row.onclick = () => { if (!DESKTOP.matches) row.classList.toggle('open'); };
     return row;
   });
-  g.cardSlot = el('div', 'cardslot', main);
+  g.cardSlot = el('div', 'cardslot', g.block);
   // Über der Punkteleiter steht im Spiel der Einsatz; nach der Runde legt sich das Ergebnis darüber.
-  const stake = el('div', 'stake', main); g.stake = stake; g.cap = el('div', 'cap', stake);
+  const stake = el('div', 'stake', g.block); g.stake = stake; g.cap = el('div', 'cap', stake);
   g.cap.textContent = 'Punkte bei richtigem Tipp';
   g.ladder = el('div', 'ladder', stake); el('span', 'thumb', g.ladder);
   g.rungs = CONFIG.POINTS.map(p => { const r = el('span', 'rung', g.ladder); r.textContent = p; return r; });
@@ -615,6 +652,8 @@ function updateGame() {
   const g = ui, q = cur(), hi = state.done ? Math.min(state.hint, 4) : state.hint, res = state.results[state.round];
 
   const key = state.round + '-' + hi;
+  // Handy: Höhe des Hinweisblocks vorher merken, damit er weich (250 ms) auf die neue Höhe wächst
+  const h0 = !DESKTOP.matches && key !== g.key && g.key ? g.block.offsetHeight : 0;
   if (key !== g.key) {
     // Gerade einen Hinweis verbraucht (gleiche Runde, nächster Hinweis)? Dann wandert die alte Karte animiert in die Liste.
     const consumed = g.key === state.round + '-' + (hi - 1);
@@ -649,6 +688,16 @@ function updateGame() {
     : (state.sel ? 'Tipp abgeben' : 'Bundesland auf der Karte wählen');
   g.btn.disabled = !state.done && !state.sel;
   sizeMap();
+  if (h0 && !reducedMotion()) {
+    const h1 = g.block.offsetHeight;
+    if (Math.abs(h1 - h0) > 1) {
+      g.block.classList.add('growing');
+      const a = g.block.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 250, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      const end = () => { clearTimeout(t); g.block.classList.remove('growing'); if (g.map.zoom) g.map.zoom.fitLabels(); };
+      const t = setTimeout(() => a.cancel(), 400); // Sicherung, falls Animationen ruhen (Tab im Hintergrund): Block nie abgeschnitten
+      a.finished.then(end, end);
+    }
+  }
 
   // Einmalige Effekte des letzten Spielzugs
   if (fx) {

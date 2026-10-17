@@ -134,29 +134,32 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px} /* Kategor
 /* Unsichtbare Messkarte für maxCardHeight() (höchste Hinweiskarte der Runde) */
 .card.measure{position:absolute;left:-9999px;top:0;visibility:hidden;animation:none;pointer-events:none}
 
-/* Handy (alles außer dem Desktop-Raster, Grenzwerte = DESKTOP in app.js), Spielansicht:
-   - Frühere Hinweise einzeilig mit "…", Antippen klappt eine Zeile aus (.open).
-   - Karte mit fester Höhe für die ganze Runde (sizeMap → mobileMapHeight), unten über der Aktionsleiste; overflow: hidden.
-   - Zoom über die viewBox (mapZoom in app.js); touch-action: none nur auf der Karte, damit der Browser dort nicht die Seite zoomt. */
+/* Handy (alles außer dem Desktop-Raster, Grenzwerte = DESKTOP in app.js), Spielansicht: wachsender Block über fester Karte.
+   - Hinweisblock (.hintblock: frühere Hinweise einzeilig mit "…", aktuelle Hinweiskarte, Punkteleiter direkt darunter) liegt mit
+     deckendem Hintergrund über der Karte; unten ein 16-px-Verlauf in die Karte (Teil des Blocks, fängt Berührungen mit ab).
+   - Kartenbereich (.mapwrap) = ganzer Bereich zwischen Rundenleiste und Aktionsleiste, overflow: hidden; die Karte darin ist unten
+     verankert, ihre Höhe setzt sizeMap je Runde (passt bei Hinweis 1 ganz unter den Block).
+   - Zoom und Verschieben über die viewBox (mapZoom in app.js); touch-action: none nur auf der Karte. */
 @media not all and (min-width:880px) and (min-height:540px){
   .earlier{gap:4px}
   .earlier .hint{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .earlier .hint span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .earlier .hint.open span{white-space:normal}
-  /* Platz für die Karte: Einsatz-Text weg (die markierte Stufe zeigt ihn), Hinweis etwas kleiner; Punkteleiter und Karte unten,
-     die freie Fläche bei frühen Hinweisen liegt zwischen Hinweiskarte und Punkteleiter */
-  body.playing .stake .cap{display:none}
+  body.playing .stake .cap{display:none} /* die markierte Stufe zeigt den Einsatz */
   body.playing .card p{font-size:1.1rem}
-  body.playing #main > .stake{margin-top:auto}
-  body.playing .mapwrap.zoomable{margin-top:0}
+  body.playing #main{position:relative}
+  .hintblock{position:relative;z-index:3;display:flex;flex-direction:column;gap:10px;padding-bottom:16px;
+    background:linear-gradient(to bottom,var(--bg) calc(100% - 16px),color-mix(in srgb,var(--bg) 0%,transparent))}
+  .hintblock.growing{overflow:hidden}
+  .mapwrap.zoomable{position:absolute;inset:0;z-index:1;min-height:0;overflow:hidden}
 }
-.mapwrap.zoomable{flex:0 0 auto;margin-top:auto;min-height:0;overflow:hidden}
+@media (min-width:880px) and (min-height:540px){.hintblock{display:contents}}
 .mapwrap.zoomable svg{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-/* "Ganze Karte": klein und dezent in der Ecke, nur im gezoomten Zustand */
-.mapreset{position:absolute;top:6px;right:6px;z-index:4;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);
+/* "Ganze Karte": klein und dezent unten rechts in der Karte, nur gezoomt oder verschoben */
+.mapreset{position:absolute;bottom:8px;right:6px;z-index:4;padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);
   color:var(--ink);font-size:.78rem;font-weight:700;box-shadow:0 2px 8px -4px rgba(0,0,0,.35)}
-/* Einmaliger Hinweis beim ersten Spiel auf einem Touch-Gerät */
-.zoomtip{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:4;padding:6px 12px;border-radius:999px;background:var(--ink);color:var(--bg);
+/* Einmaliger Hinweis beim ersten Spiel auf einem Touch-Gerät (unten in der Karte, oben liegt der Hinweisblock) */
+.zoomtip{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:4;padding:6px 12px;border-radius:999px;background:var(--ink);color:var(--bg);
   font-size:.8rem;font-weight:600;white-space:nowrap;pointer-events:none;animation:tipIn .3s ease both;transition:opacity .3s}
 .zoomtip.out{opacity:0}
 @keyframes tipIn{from{opacity:0;transform:translate(-50%,-4px)}}
@@ -518,7 +521,7 @@ body[data-view="end"] .devpanel{bottom:12px} /* auf der Auswertung gibt es keine
   .fact{padding:6px 8px 7px}
   .mapwrap.logo{flex-basis:90px;min-height:90px}
   .app{gap:10px;padding-top:8px}
-  #main{gap:8px}
+  #main,.hintblock{gap:8px}
   .top{padding-bottom:8px}
   .top h1 small{display:none}
   .card{padding:12px 16px 14px;gap:6px}
