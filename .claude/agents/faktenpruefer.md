@@ -22,6 +22,10 @@ Lies `sechzehn/data/fakten.csv` (Semikolon-getrennt, UTF-8) und `sechzehn/CLAUDE
 - **Feiertage:** nur amtliche, dauerhafte Feiertage; Liste aller Länder mit diesem Feiertag prüfen (auch regionale Feiertage in Teilen eines Landes) und `trifft_auch_zu` danach füllen. Keine Schulferien.
 - **Vergleiche** („so groß wie Belgien“, „passt X-mal hinein“): beide Werte aus Quellen nachrechnen; großzügig gerundete Vergleiche nur, wenn die Rundung im Text erkennbar ist („etwa“, „gut“).
 - **Stufe über den Denkweg:** Stufe 1–2 Herleitung/Eingrenzung, Stufe 3 eindeutig aber überlegbar, Stufe 4–5 Wiedererkennung. Passt die Stufe nicht, Stufe-Vorschlag in der Notiz.
+- **Denkweg streng prüfen und korrigieren** (Feld `denkweg` mitgeben): Was man nur wissen kann, ist **Wissen** – z. B. „der MDR ist hier zuständig“, „A4 und A9 kreuzen sich hier“, „X wurde hier geboren“ –, auch wenn es auf mehrere Länder passt. **Herleitung** nur, wenn man durch Überlegen, Karte, Ausschluss oder Wortbestandteile hinkommt. **Wiedererkennung**, wenn ein bekannter Name selbst die Region verrät.
+- **„Person X wurde hier geboren“ höchstens 2-mal je Land** (Bestand mitzählen); mehr → `unsicher` mit Hinweis, welcher Fakt entfallen sollte.
+- **Quellen:** amtlich vor Institution vor Medien; Wikipedia nur als Zweitquelle bei unstrittigen Fakten. Steht nur Wikipedia da, suche eine amtliche oder institutionelle Quelle (z. B. Autobahn GmbH, Statistikamt, Landesportal) und ersetze sie; gelingt das nicht, `unsicher` mit „nur Wikipedia“.
+- **Gruppen vorschlagen:** Führen zwei Fakten desselben Landes über dieselbe Überlegung zur Lösung, gib beiden das Feld `gruppe` mit (gleicher Name, z. B. `SH-Kueste`) und nenne den Grund in der Notiz. Fakten derselben Gruppe kommen nie in dieselbe Runde.
 
 ## Prüfschritte pro Fakt
 
@@ -75,6 +79,7 @@ Regeln für die Felder:
 - `quelle`: die wichtigste belegende URL; weitere URLs mit einem Leerzeichen getrennt (höchstens drei).
 - `pruefnotiz`: eine Zeile, höchstens etwa 300 Zeichen, eigene Worte, keine Zitate über 15 Wörter, keine Zeilenumbrüche. Nenne, welche Quelle was belegt, und bei `unsicher`/`falsch` die konkrete Frage oder Korrektur.
 - Optional `kategorie`, `thema`, `denkweg`: nur mitgeben, wenn du sie korrigierst oder sie leer waren; nur Werte aus dem Kategoriensystem verwenden (das Einspielskript lehnt andere ab).
+- Optional `gruppe`: Gruppenname für Fakten, die nie in dieselbe Runde sollen (siehe oben).
 - Keine weiteren Felder. `stand` setzt das Einspielskript.
 
 Gib danach als Antwort eine kurze Tabelle zurück: ID, Status, ein Satz Begründung.
