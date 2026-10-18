@@ -1588,8 +1588,10 @@ updateThemeButton();
 
 async function start() {
   try {
-    const [m, csv, plan] = await Promise.all([fetch('data/map.json').then(r => r.json()), fetch('data/fakten.csv').then(r => r.text()),
-      fetch('data/plan.json').then(r => (r.ok ? r.json() : null)).catch(() => null)]);
+    // Faktenpool und Plan immer beim Server nachfragen (cache: 'no-cache'), damit beide zusammenpassen: ein Plan mit neuen Fakt-IDs
+    // und eine veraltete CSV aus dem Browser-Zwischenspeicher würden sonst für diesen Tag ein anderes Level ergeben.
+    const [m, csv, plan] = await Promise.all([fetch('data/map.json').then(r => r.json()), fetch('data/fakten.csv', { cache: 'no-cache' }).then(r => r.text()),
+      fetch('data/plan.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null)]);
     PLAN = plan;
     MAP = m; NAMES = Object.fromEntries(Object.entries(MAP.states).map(([k, v]) => [k, v.name]));
     DAYNO = dayNumber();
